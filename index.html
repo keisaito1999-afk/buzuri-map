@@ -131,6 +131,34 @@
     }
     #store-panel.open { transform: translateY(0); }
 
+    /* Panel photo */
+    #panel-photo {
+      width: calc(100% + 40px);
+      margin: 0 -20px;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+    #panel-photo-wrap {
+      position: relative;
+      margin: 0 -20px;
+      height: 180px;
+      overflow: hidden;
+      background: #eee;
+    }
+    #panel-photo-wrap img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+    #panel-photo-gradient {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.25));
+    }
+
     #panel-drag-area {
       padding: 14px 0 8px;
       display: flex;
@@ -357,6 +385,10 @@
 
 <!-- Store Info Panel -->
 <div id="store-panel">
+  <div id="panel-photo-wrap">
+    <img id="panel-photo" src="" alt="店舗写真" loading="lazy">
+    <div id="panel-photo-gradient"></div>
+  </div>
   <div id="panel-drag-area">
     <div id="panel-handle"></div>
   </div>
@@ -602,6 +634,18 @@ const STORES = [
   { id:107, name:'指宿 砂むし温泉カフェ 砂楽',          address:'鹿児島県指宿市湯の浜5-25-18',        prefecture:'鹿児島県', category:'カフェ',  lat:31.2523, lng:130.6353, score:8600, instagram:7400, tiktok:2900000 },
 ];
 
+/* ====== CATEGORY PHOTOS (Unsplash) ====== */
+const CATEGORY_PHOTOS = {
+  'カフェ':   'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=300&fit=crop&auto=format',
+  'ラーメン':  'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&h=300&fit=crop&auto=format',
+  '居酒屋':   'https://images.unsplash.com/photo-1547592180-85f173990554?w=600&h=300&fit=crop&auto=format',
+  '焼肉':    'https://images.unsplash.com/photo-1544025162-d76538b367e0?w=600&h=300&fit=crop&auto=format',
+  'スイーツ':  'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=600&h=300&fit=crop&auto=format',
+  '寿司':    'https://images.unsplash.com/photo-1553621042-f6e147245754?w=600&h=300&fit=crop&auto=format',
+  '洋食':    'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=300&fit=crop&auto=format',
+  '中華':    'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&h=300&fit=crop&auto=format',
+};
+
 /* ====== STATE ====== */
 let map, markers = [];
 let selectedCategory = 'すべて';
@@ -758,6 +802,9 @@ function renderMarkers() {
 /* ====== PANEL ====== */
 function openPanel(store) {
   const color = getCategoryColor(store.category);
+  // 写真
+  const photoUrl = CATEGORY_PHOTOS[store.category] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=300&fit=crop&auto=format';
+  document.getElementById('panel-photo').src = photoUrl;
   document.getElementById('panel-category-badge').textContent = store.category;
   document.getElementById('panel-category-badge').style.background = color;
   document.getElementById('panel-name').textContent = store.name;
