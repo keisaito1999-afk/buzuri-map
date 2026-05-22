@@ -288,14 +288,65 @@
     <div id="prefecture-row">
       <select id="prefecture-select" onchange="onPrefectureChange()">
         <option value="all">📍 全国</option>
-        <option value="北海道">北海道</option>
-        <option value="東京都">東京都</option>
-        <option value="神奈川県">神奈川県</option>
-        <option value="愛知県">愛知県</option>
-        <option value="大阪府">大阪府</option>
-        <option value="京都府">京都府</option>
-        <option value="福岡県">福岡県</option>
-        <option value="沖縄県">沖縄県</option>
+        <optgroup label="北海道・東北">
+          <option value="北海道">北海道</option>
+          <option value="青森県">青森県</option>
+          <option value="岩手県">岩手県</option>
+          <option value="宮城県">宮城県</option>
+          <option value="秋田県">秋田県</option>
+          <option value="山形県">山形県</option>
+          <option value="福島県">福島県</option>
+        </optgroup>
+        <optgroup label="関東">
+          <option value="茨城県">茨城県</option>
+          <option value="栃木県">栃木県</option>
+          <option value="群馬県">群馬県</option>
+          <option value="埼玉県">埼玉県</option>
+          <option value="千葉県">千葉県</option>
+          <option value="東京都">東京都</option>
+          <option value="神奈川県">神奈川県</option>
+        </optgroup>
+        <optgroup label="中部">
+          <option value="新潟県">新潟県</option>
+          <option value="富山県">富山県</option>
+          <option value="石川県">石川県</option>
+          <option value="福井県">福井県</option>
+          <option value="山梨県">山梨県</option>
+          <option value="長野県">長野県</option>
+          <option value="岐阜県">岐阜県</option>
+          <option value="静岡県">静岡県</option>
+          <option value="愛知県">愛知県</option>
+        </optgroup>
+        <optgroup label="近畿">
+          <option value="三重県">三重県</option>
+          <option value="滋賀県">滋賀県</option>
+          <option value="京都府">京都府</option>
+          <option value="大阪府">大阪府</option>
+          <option value="兵庫県">兵庫県</option>
+          <option value="奈良県">奈良県</option>
+          <option value="和歌山県">和歌山県</option>
+        </optgroup>
+        <optgroup label="中国・四国">
+          <option value="鳥取県">鳥取県</option>
+          <option value="島根県">島根県</option>
+          <option value="岡山県">岡山県</option>
+          <option value="広島県">広島県</option>
+          <option value="山口県">山口県</option>
+          <option value="徳島県">徳島県</option>
+          <option value="香川県">香川県</option>
+          <option value="愛媛県">愛媛県</option>
+          <option value="高知県">高知県</option>
+        </optgroup>
+        <optgroup label="九州・沖縄">
+          <option value="福岡県">福岡県</option>
+          <option value="佐賀県">佐賀県</option>
+          <option value="長崎県">長崎県</option>
+          <option value="熊本県">熊本県</option>
+          <option value="大分県">大分県</option>
+          <option value="宮崎県">宮崎県</option>
+          <option value="鹿児島県">鹿児島県</option>
+          <option value="沖縄県">沖縄県</option>
+        </optgroup>
       </select>
     </div>
     <div id="category-row"></div>
@@ -393,6 +444,162 @@ const STORES = [
   // 沖縄県
   { id:28, name:'国際通り 沖縄そば やんばる', address:'沖縄県那覇市牧志1-4-59',           prefecture:'沖縄県',  category:'ラーメン', lat:26.2187, lng:127.6895, score:8500, instagram:4300,  tiktok:1200000 },
   { id:29, name:'美ら海カフェ テラス',        address:'沖縄県国頭郡本部町石川424',         prefecture:'沖縄県',  category:'カフェ',   lat:26.6940, lng:127.8784, score:9600, instagram:8900,  tiktok:3200000 },
+
+  // 青森県
+  { id:30, name:'青森 煮干しラーメン 長尾中華そば', address:'青森県青森市古川1-15-6',     prefecture:'青森県',  category:'ラーメン', lat:40.8237, lng:140.7401, score:8700, instagram:3200, tiktok:1350000 },
+  { id:31, name:'弘前 りんごカフェ HIROSAKI', address:'青森県弘前市土手町52',             prefecture:'青森県',  category:'カフェ',   lat:40.6036, lng:140.4644, score:7900, instagram:5100, tiktok:1800000 },
+
+  // 岩手県
+  { id:32, name:'盛岡 冷麺 盛楼閣',          address:'岩手県盛岡市盛岡駅前通15-5',        prefecture:'岩手県',  category:'ラーメン', lat:39.7019, lng:141.1388, score:9000, instagram:4200, tiktok:1650000 },
+  { id:33, name:'盛岡 福田パン 本店',         address:'岩手県盛岡市長田町12-11',           prefecture:'岩手県',  category:'スイーツ', lat:39.7006, lng:141.1396, score:8200, instagram:6300, tiktok:2100000 },
+
+  // 宮城県
+  { id:34, name:'仙台 牛タン 喜助 駅前本店',  address:'宮城県仙台市青葉区中央1-1-1',       prefecture:'宮城県',  category:'焼肉',    lat:38.2604, lng:140.8827, score:9400, instagram:5500, tiktok:2200000 },
+  { id:35, name:'仙台 ずんだ茶寮',            address:'宮城県仙台市青葉区中央1-1-1',       prefecture:'宮城県',  category:'スイーツ', lat:38.2599, lng:140.8831, score:8800, instagram:7200, tiktok:2900000 },
+
+  // 秋田県
+  { id:36, name:'秋田 比内地鶏 きりたんぽ鍋 炉端', address:'秋田県秋田市中通3-6-12',     prefecture:'秋田県',  category:'居酒屋',  lat:39.7186, lng:140.1023, score:8100, instagram:2900, tiktok:980000  },
+  { id:37, name:'稲庭 佐藤養助 うどん 総本店', address:'秋田県湯沢市稲庭町稲庭191',        prefecture:'秋田県',  category:'ラーメン', lat:39.1456, lng:140.5119, score:8600, instagram:3800, tiktok:1250000 },
+
+  // 山形県
+  { id:38, name:'山形 芋煮会 河原屋',         address:'山形県山形市鉄砲町1-3-25',          prefecture:'山形県',  category:'居酒屋',  lat:38.2404, lng:140.3634, score:7800, instagram:3100, tiktok:890000  },
+  { id:39, name:'米沢 牛肉料理 登起波',        address:'山形県米沢市丸の内1-3-60',          prefecture:'山形県',  category:'焼肉',    lat:37.9202, lng:140.1150, score:8900, instagram:4600, tiktok:1700000 },
+
+  // 福島県
+  { id:40, name:'福島 円盤餃子 照井 本店',     address:'福島県福島市栄町6-23',              prefecture:'福島県',  category:'中華',    lat:37.7605, lng:140.4736, score:8300, instagram:3700, tiktok:1300000 },
+  { id:41, name:'会津 鶴ヶ城 壱番館カフェ',    address:'福島県会津若松市追手町1-1',          prefecture:'福島県',  category:'カフェ',   lat:37.4965, lng:139.9314, score:7500, instagram:4900, tiktok:1550000 },
+
+  // 茨城県
+  { id:42, name:'水戸 スタミナラーメン 天狗', address:'茨城県水戸市南町2-6-21',            prefecture:'茨城県',  category:'ラーメン', lat:36.3418, lng:140.4468, score:7600, instagram:2500, tiktok:820000  },
+  { id:43, name:'つくば ステーキ宮 本店',      address:'茨城県つくば市二の宮2-16-2',         prefecture:'茨城県',  category:'洋食',    lat:36.0838, lng:140.0774, score:7200, instagram:2100, tiktok:710000  },
+
+  // 栃木県
+  { id:44, name:'宇都宮 餃子 正嗣 宮島本店',  address:'栃木県宇都宮市馬場通り4-2-3',        prefecture:'栃木県',  category:'中華',    lat:36.5671, lng:139.8928, score:9100, instagram:5800, tiktok:2400000 },
+  { id:45, name:'日光 カフェ 匠庵',           address:'栃木県日光市上鉢石町1019',           prefecture:'栃木県',  category:'カフェ',   lat:36.7484, lng:139.5986, score:7800, instagram:5200, tiktok:1700000 },
+
+  // 群馬県
+  { id:46, name:'高崎 だるまラーメン 本店',    address:'群馬県高崎市鞘町22',                prefecture:'群馬県',  category:'ラーメン', lat:36.3232, lng:139.0030, score:7900, instagram:3100, tiktok:1050000 },
+  { id:47, name:'草津温泉 カフェ 湯けむり',    address:'群馬県吾妻郡草津町草津464',          prefecture:'群馬県',  category:'カフェ',   lat:36.6217, lng:138.5963, score:8400, instagram:6100, tiktok:2100000 },
+
+  // 埼玉県
+  { id:48, name:'大宮 煮干しまぜそば 武蔵',   address:'埼玉県さいたま市大宮区宮町1-38',     prefecture:'埼玉県',  category:'ラーメン', lat:35.9063, lng:139.6234, score:8200, instagram:3500, tiktok:1150000 },
+  { id:49, name:'川越 芋スイーツ 菓子屋横丁', address:'埼玉県川越市元町2-7-3',              prefecture:'埼玉県',  category:'スイーツ', lat:35.9251, lng:139.4853, score:8700, instagram:7400, tiktok:2600000 },
+
+  // 千葉県
+  { id:50, name:'勝浦 海鮮丼 大漁旗',         address:'千葉県勝浦市墨名593',               prefecture:'千葉県',  category:'寿司',    lat:35.1527, lng:140.3175, score:8500, instagram:4900, tiktok:1650000 },
+  { id:51, name:'成田 うなぎ 川豊 本店',       address:'千葉県成田市仲町386',               prefecture:'千葉県',  category:'洋食',    lat:35.7742, lng:140.3179, score:8900, instagram:5600, tiktok:2050000 },
+
+  // 新潟県
+  { id:52, name:'新潟 へぎそば 由屋 本店',     address:'新潟県新潟市中央区東堀前通7-1079',  prefecture:'新潟県',  category:'ラーメン', lat:37.9161, lng:139.0428, score:8300, instagram:3400, tiktok:1100000 },
+  { id:53, name:'新潟 タレカツ丼 とんかつ太郎', address:'新潟県新潟市中央区弁天1-4-27',     prefecture:'新潟県',  category:'洋食',    lat:37.9063, lng:139.0498, score:7900, instagram:2900, tiktok:950000  },
+
+  // 富山県
+  { id:54, name:'富山 白えびラーメン 麺家いろは', address:'富山県富山市桜橋通り2-17',       prefecture:'富山県',  category:'ラーメン', lat:36.6953, lng:137.2113, score:8600, instagram:3700, tiktok:1350000 },
+  { id:55, name:'富山 ます寿し 源 総本店',      address:'富山県富山市大泉本町1-8-10',        prefecture:'富山県',  category:'寿司',    lat:36.7024, lng:137.2079, score:8100, instagram:4100, tiktok:1500000 },
+
+  // 石川県
+  { id:56, name:'金沢 近江町市場 海鮮丼 海鮮処',address:'石川県金沢市上近江町50',           prefecture:'石川県',  category:'寿司',    lat:36.5721, lng:136.6538, score:9300, instagram:7200, tiktok:2800000 },
+  { id:57, name:'金沢 ひがし茶屋街 町家カフェ 箔座', address:'石川県金沢市東山1-13-10',    prefecture:'石川県',  category:'カフェ',   lat:36.5779, lng:136.6626, score:9000, instagram:8500, tiktok:3100000 },
+
+  // 福井県
+  { id:58, name:'福井 ソースカツ丼 ヨーロッパ軒', address:'福井県福井市順化1-7-17',        prefecture:'福井県',  category:'洋食',    lat:36.0652, lng:136.2217, score:8500, instagram:4300, tiktok:1600000 },
+  { id:59, name:'敦賀 越前ガニ料理 松葉',       address:'福井県敦賀市神楽町1-4-10',          prefecture:'福井県',  category:'寿司',    lat:35.6449, lng:136.0557, score:8800, instagram:3900, tiktok:1400000 },
+
+  // 山梨県
+  { id:60, name:'甲府 ほうとう 小作 甲府駅前店', address:'山梨県甲府市中央1-6-11',         prefecture:'山梨県',  category:'ラーメン', lat:35.6635, lng:138.5685, score:8400, instagram:4800, tiktok:1700000 },
+  { id:61, name:'河口湖 富士山ビューカフェ FUJIKAZE', address:'山梨県南都留郡富士河口湖町船津3635', prefecture:'山梨県', category:'カフェ', lat:35.5097, lng:138.7531, score:9500, instagram:11200, tiktok:4200000 },
+
+  // 長野県
+  { id:62, name:'松本 山賊焼き 山の神 本店',    address:'長野県松本市大手4-3-13',            prefecture:'長野県',  category:'居酒屋',  lat:36.2381, lng:137.9719, score:8200, instagram:3600, tiktok:1200000 },
+  { id:63, name:'善光寺 門前カフェ 藤屋御本陳', address:'長野県長野市大門町80',              prefecture:'長野県',  category:'カフェ',   lat:36.6612, lng:138.1884, score:8700, instagram:6500, tiktok:2300000 },
+
+  // 岐阜県
+  { id:64, name:'高山 飛騨牛 割烹 鳩谷',        address:'岐阜県高山市花里町4-60',            prefecture:'岐阜県',  category:'焼肉',    lat:36.1399, lng:137.2513, score:9200, instagram:5900, tiktok:2100000 },
+  { id:65, name:'岐阜 鶏ちゃん 坂本屋',         address:'岐阜県下呂市萩原町羽根1551',         prefecture:'岐阜県',  category:'居酒屋',  lat:35.8079, lng:137.2454, score:7800, instagram:3200, tiktok:1050000 },
+
+  // 静岡県
+  { id:66, name:'静岡 さわやか げんこつハンバーグ', address:'静岡県静岡市葵区黒金町24-1',   prefecture:'静岡県',  category:'洋食',    lat:34.9756, lng:138.3828, score:9600, instagram:12000, tiktok:5000000 },
+  { id:67, name:'浜松 うなぎ 藤田',             address:'静岡県浜松市中区鍛冶町1-7',          prefecture:'静岡県',  category:'洋食',    lat:34.7108, lng:137.7261, score:8500, instagram:4100, tiktok:1450000 },
+
+  // 三重県
+  { id:68, name:'伊勢 赤福 本店',               address:'三重県伊勢市宇治中之切町26',          prefecture:'三重県',  category:'スイーツ', lat:34.4557, lng:136.7254, score:9800, instagram:14500, tiktok:5800000 },
+  { id:69, name:'松阪 松阪牛 和田金 本店',       address:'三重県松阪市中町1878',               prefecture:'三重県',  category:'焼肉',    lat:34.5780, lng:136.5271, score:9300, instagram:6200, tiktok:2400000 },
+
+  // 滋賀県
+  { id:70, name:'大津 琵琶湖ビューカフェ 叶匠壽庵', address:'滋賀県大津市大萱1-16-5',        prefecture:'滋賀県',  category:'カフェ',   lat:35.0045, lng:135.8686, score:8300, instagram:5700, tiktok:2000000 },
+  { id:71, name:'彦根 近江牛 千成亭 本店',        address:'滋賀県彦根市本町2-1-3',             prefecture:'滋賀県',  category:'焼肉',    lat:35.2758, lng:136.2528, score:8800, instagram:4300, tiktok:1600000 },
+
+  // 兵庫県
+  { id:72, name:'神戸南京町 老祥記 豚まん',       address:'兵庫県神戸市中央区元町通2-1-14',    prefecture:'兵庫県',  category:'中華',    lat:34.6906, lng:135.1840, score:9200, instagram:7800, tiktok:3200000 },
+  { id:73, name:'神戸 元町 スイーツ ゴーフル 本店', address:'兵庫県神戸市中央区元町通1-7-2',  prefecture:'兵庫県',  category:'スイーツ', lat:34.6887, lng:135.1867, score:8100, instagram:5400, tiktok:1900000 },
+
+  // 奈良県
+  { id:74, name:'奈良 中谷堂 よもぎ餅',          address:'奈良県奈良市橋本町29',               prefecture:'奈良県',  category:'スイーツ', lat:34.6851, lng:135.8327, score:9400, instagram:9200, tiktok:3800000 },
+  { id:75, name:'吉野 柿の葉寿司 平宗 本店',      address:'奈良県吉野郡吉野町吉野山799',         prefecture:'奈良県',  category:'寿司',    lat:34.3704, lng:135.8592, score:8200, instagram:4100, tiktok:1350000 },
+
+  // 和歌山県
+  { id:76, name:'和歌山 中華そば マルショウ',     address:'和歌山県和歌山市有本366-1',           prefecture:'和歌山県', category:'ラーメン', lat:34.2260, lng:135.1675, score:8700, instagram:4600, tiktok:1700000 },
+  { id:77, name:'那智勝浦 マグロ料理 桂城',        address:'和歌山県東牟婁郡那智勝浦町築地3-2',   prefecture:'和歌山県', category:'寿司',    lat:33.6276, lng:135.9380, score:8400, instagram:5200, tiktok:1900000 },
+
+  // 鳥取県
+  { id:78, name:'鳥取 砂丘 らっきょうカフェ',      address:'鳥取県鳥取市福部町湯山2164-1',       prefecture:'鳥取県',  category:'カフェ',   lat:35.5383, lng:134.2367, score:8000, instagram:5800, tiktok:2100000 },
+  { id:79, name:'境港 水木しげるロード 海鮮丼 漁師小屋', address:'鳥取県境港市本町3',          prefecture:'鳥取県',  category:'寿司',    lat:35.5442, lng:133.2328, score:8600, instagram:6100, tiktok:2300000 },
+
+  // 島根県
+  { id:80, name:'松江 宍道湖 しじみ茶漬け 和喜多', address:'島根県松江市末次本町14',           prefecture:'島根県',  category:'洋食',    lat:35.4723, lng:133.0505, score:8200, instagram:3900, tiktok:1300000 },
+  { id:81, name:'出雲大社 割子そば 荒木屋',        address:'島根県出雲市大社町杵築南775',         prefecture:'島根県',  category:'ラーメン', lat:35.4018, lng:132.6854, score:8800, instagram:5400, tiktok:2000000 },
+
+  // 岡山県
+  { id:82, name:'岡山 ままかり押し寿司 つぼや',    address:'岡山県岡山市北区表町1-5-1',          prefecture:'岡山県',  category:'寿司',    lat:34.6618, lng:133.9344, score:8100, instagram:3700, tiktok:1200000 },
+  { id:83, name:'倉敷美観地区 カフェ 星野仙平',    address:'岡山県倉敷市本町4-1',               prefecture:'岡山県',  category:'カフェ',   lat:34.5951, lng:133.7715, score:8900, instagram:7600, tiktok:2900000 },
+
+  // 広島県
+  { id:84, name:'広島 お好み焼き みっちゃん 総本店', address:'広島県広島市中区八丁堀6-7',      prefecture:'広島県',  category:'洋食',    lat:34.3963, lng:132.4596, score:9500, instagram:8900, tiktok:3600000 },
+  { id:85, name:'宮島 牡蠣小屋 かき船 大黒屋',     address:'広島県廿日市市宮島町505',            prefecture:'広島県',  category:'寿司',    lat:34.2961, lng:132.3196, score:9200, instagram:9500, tiktok:3900000 },
+
+  // 山口県
+  { id:86, name:'下関 ふぐ料理 春帆楼',            address:'山口県下関市阿弥陀寺町4-2',          prefecture:'山口県',  category:'寿司',    lat:33.9533, lng:130.9430, score:9100, instagram:5200, tiktok:1900000 },
+  { id:87, name:'萩 萩焼カフェ 春日屋',             address:'山口県萩市呉服町1-51',               prefecture:'山口県',  category:'カフェ',   lat:34.4076, lng:131.3991, score:7800, instagram:4300, tiktok:1500000 },
+
+  // 徳島県
+  { id:88, name:'徳島 ラーメン いのたに 本店',      address:'徳島県徳島市西大工町4-25',           prefecture:'徳島県',  category:'ラーメン', lat:34.0760, lng:134.5598, score:8600, instagram:4100, tiktok:1500000 },
+  { id:89, name:'鳴門 なると金時スイーツ 大谷焼の里', address:'徳島県鳴門市撫養町大桑島字浜端185', prefecture:'徳島県', category:'スイーツ', lat:34.1776, lng:134.6097, score:7900, instagram:5600, tiktok:1950000 },
+
+  // 香川県
+  { id:90, name:'高松 讃岐うどん 山越 本店',        address:'香川県綾歌郡綾川町羽床上602-2',       prefecture:'香川県',  category:'ラーメン', lat:34.2433, lng:133.9476, score:9400, instagram:8700, tiktok:3500000 },
+  { id:91, name:'丸亀 骨付鳥 一鶴 本店',            address:'香川県丸亀市浜町317',                prefecture:'香川県',  category:'居酒屋',  lat:34.2894, lng:133.7975, score:8800, instagram:5100, tiktok:1900000 },
+
+  // 愛媛県
+  { id:92, name:'松山 鯛めし 秋嘉',                address:'愛媛県松山市大街道3-4-15',           prefecture:'愛媛県',  category:'寿司',    lat:33.8416, lng:132.7657, score:8500, instagram:4800, tiktok:1750000 },
+  { id:93, name:'道後温泉 湯上がりカフェ 茶玻瑠',   address:'愛媛県松山市道後湯之町6-7',           prefecture:'愛媛県',  category:'カフェ',   lat:33.8523, lng:132.7860, score:8900, instagram:7200, tiktok:2700000 },
+
+  // 高知県
+  { id:94, name:'高知 かつおのたたき 明神丸 ひろめ市場店', address:'高知県高知市帯屋町2-3-1', prefecture:'高知県',  category:'寿司',    lat:33.5597, lng:133.5311, score:9200, instagram:7800, tiktok:3100000 },
+  { id:95, name:'高知 日曜市 芋けんぴ 小夏 とさかつお', address:'高知県高知市追手筋',          prefecture:'高知県',  category:'スイーツ', lat:33.5593, lng:133.5316, score:8100, instagram:5400, tiktok:1900000 },
+
+  // 佐賀県
+  { id:96, name:'呼子 イカの活造り 河太郎 呼子店',   address:'佐賀県唐津市呼子町呼子1744',         prefecture:'佐賀県',  category:'寿司',    lat:33.5070, lng:129.8338, score:9400, instagram:8200, tiktok:3300000 },
+  { id:97, name:'嬉野温泉 湯豆腐料理 大村屋',         address:'佐賀県嬉野市嬉野町大字下宿乙2190-1', prefecture:'佐賀県',  category:'洋食',    lat:33.1123, lng:129.9869, score:8200, instagram:4700, tiktok:1650000 },
+
+  // 長崎県
+  { id:98, name:'長崎 トルコライス ツル茶ん',         address:'長崎県長崎市油屋町2-47',             prefecture:'長崎県',  category:'洋食',    lat:32.7448, lng:129.8737, score:8700, instagram:5300, tiktok:2000000 },
+  { id:99, name:'長崎新地 ちゃんぽん 江山楼 本店',    address:'長崎県長崎市新地町13-13',            prefecture:'長崎県',  category:'中華',    lat:32.7395, lng:129.8686, score:9100, instagram:6100, tiktok:2400000 },
+
+  // 熊本県
+  { id:100, name:'熊本 馬刺し 馬肉専門店 隆熊',       address:'熊本県熊本市中央区下通1-3-1',        prefecture:'熊本県',  category:'居酒屋',  lat:32.7898, lng:130.7417, score:8900, instagram:5800, tiktok:2200000 },
+  { id:101, name:'熊本 太平燕 紅蘭亭 本店',           address:'熊本県熊本市中央区下通1-2-10',       prefecture:'熊本県',  category:'中華',    lat:32.7893, lng:130.7410, score:8400, instagram:4200, tiktok:1550000 },
+
+  // 大分県
+  { id:102, name:'別府 地獄蒸し工房 鉄輪',           address:'大分県別府市井田364-1',               prefecture:'大分県',  category:'洋食',    lat:33.2900, lng:131.5015, score:9000, instagram:8100, tiktok:3300000 },
+  { id:103, name:'大分 とり天 東洋軒 本店',            address:'大分県大分市中央町3-2-6',            prefecture:'大分県',  category:'居酒屋',  lat:33.2382, lng:131.6126, score:8300, instagram:4600, tiktok:1700000 },
+
+  // 宮崎県
+  { id:104, name:'宮崎 チキン南蛮 おぐら 本店',        address:'宮崎県宮崎市橘通西3-4-34',           prefecture:'宮崎県',  category:'洋食',    lat:31.9111, lng:131.4239, score:9100, instagram:6500, tiktok:2600000 },
+  { id:105, name:'日向 地鶏の炭火焼き 山形屋',         address:'宮崎県宮崎市橘通東4-7-1',            prefecture:'宮崎県',  category:'居酒屋',  lat:31.9150, lng:131.4271, score:8500, instagram:4900, tiktok:1800000 },
+
+  // 鹿児島県
+  { id:106, name:'鹿児島 黒豚しゃぶしゃぶ 和気 天文館店', address:'鹿児島県鹿児島市千日町12-20',    prefecture:'鹿児島県', category:'焼肉',   lat:31.5902, lng:130.5506, score:8900, instagram:5700, tiktok:2100000 },
+  { id:107, name:'指宿 砂むし温泉カフェ 砂楽',          address:'鹿児島県指宿市湯の浜5-25-18',        prefecture:'鹿児島県', category:'カフェ',  lat:31.2523, lng:130.6353, score:8600, instagram:7400, tiktok:2900000 },
 ];
 
 /* ====== STATE ====== */
@@ -452,12 +659,51 @@ function buildCategoryChips() {
 /* ====== PREFECTURE CHANGE ====== */
 const PREF_CENTERS = {
   '北海道':  { lat:43.0642, lng:141.3469, zoom:10 },
+  '青森県':  { lat:40.8244, lng:140.7400, zoom:11 },
+  '岩手県':  { lat:39.7036, lng:141.1527, zoom:11 },
+  '宮城県':  { lat:38.2688, lng:140.8721, zoom:11 },
+  '秋田県':  { lat:39.7186, lng:140.1023, zoom:11 },
+  '山形県':  { lat:38.2404, lng:140.3634, zoom:11 },
+  '福島県':  { lat:37.7500, lng:140.4676, zoom:11 },
+  '茨城県':  { lat:36.3418, lng:140.4468, zoom:11 },
+  '栃木県':  { lat:36.5657, lng:139.8836, zoom:11 },
+  '群馬県':  { lat:36.3912, lng:139.0608, zoom:11 },
+  '埼玉県':  { lat:35.8570, lng:139.6489, zoom:11 },
+  '千葉県':  { lat:35.6050, lng:140.1233, zoom:11 },
   '東京都':  { lat:35.6762, lng:139.6503, zoom:11 },
   '神奈川県': { lat:35.4478, lng:139.6425, zoom:11 },
+  '新潟県':  { lat:37.9026, lng:139.0232, zoom:11 },
+  '富山県':  { lat:36.6953, lng:137.2113, zoom:11 },
+  '石川県':  { lat:36.5944, lng:136.6256, zoom:11 },
+  '福井県':  { lat:36.0652, lng:136.2217, zoom:11 },
+  '山梨県':  { lat:35.6635, lng:138.5685, zoom:11 },
+  '長野県':  { lat:36.6513, lng:138.1810, zoom:11 },
+  '岐阜県':  { lat:35.3912, lng:136.7223, zoom:11 },
+  '静岡県':  { lat:34.9756, lng:138.3828, zoom:11 },
   '愛知県':  { lat:35.1802, lng:136.9066, zoom:11 },
-  '大阪府':  { lat:34.6937, lng:135.5023, zoom:11 },
+  '三重県':  { lat:34.7303, lng:136.5086, zoom:11 },
+  '滋賀県':  { lat:35.0045, lng:135.8686, zoom:11 },
   '京都府':  { lat:35.0116, lng:135.7681, zoom:11 },
+  '大阪府':  { lat:34.6937, lng:135.5023, zoom:11 },
+  '兵庫県':  { lat:34.6913, lng:135.1830, zoom:11 },
+  '奈良県':  { lat:34.6851, lng:135.8327, zoom:11 },
+  '和歌山県': { lat:34.2260, lng:135.1675, zoom:11 },
+  '鳥取県':  { lat:35.5036, lng:134.2381, zoom:11 },
+  '島根県':  { lat:35.4723, lng:133.0505, zoom:11 },
+  '岡山県':  { lat:34.6618, lng:133.9344, zoom:11 },
+  '広島県':  { lat:34.3963, lng:132.4596, zoom:11 },
+  '山口県':  { lat:34.1861, lng:131.4706, zoom:11 },
+  '徳島県':  { lat:34.0658, lng:134.5594, zoom:11 },
+  '香川県':  { lat:34.3401, lng:134.0434, zoom:11 },
+  '愛媛県':  { lat:33.8416, lng:132.7657, zoom:11 },
+  '高知県':  { lat:33.5597, lng:133.5311, zoom:11 },
   '福岡県':  { lat:33.5902, lng:130.4017, zoom:12 },
+  '佐賀県':  { lat:33.2494, lng:130.2988, zoom:11 },
+  '長崎県':  { lat:32.7448, lng:129.8737, zoom:11 },
+  '熊本県':  { lat:32.7898, lng:130.7417, zoom:11 },
+  '大分県':  { lat:33.2382, lng:131.6126, zoom:11 },
+  '宮崎県':  { lat:31.9111, lng:131.4239, zoom:11 },
+  '鹿児島県': { lat:31.5602, lng:130.5581, zoom:11 },
   '沖縄県':  { lat:26.2124, lng:127.6809, zoom:11 },
 };
 
