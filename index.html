@@ -2,174 +2,141 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="theme-color" content="#FF6B6B">
-  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>バズりマップ</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-      height: 100vh; overflow: hidden; background: #f5f5f5;
-    }
-    #app { display: flex; flex-direction: column; height: 100vh; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif; background: #0a0a0a; color: #fff; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
 
-    /* ── Header ── */
-    #header {
-      background: #FF6B6B; color: white;
-      padding: 12px 16px;
-      display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18); z-index: 100;
+    /* ===== TOP BAR ===== */
+    #top-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 12px 16px 8px;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.95) 80%, transparent);
     }
-    #header h1 { font-size: 18px; font-weight: 800; }
-    #locate-btn {
-      background: rgba(255,255,255,0.22); border: none; color: white;
-      padding: 7px 13px; border-radius: 20px; font-size: 13px;
-      cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600;
-    }
-    #locate-btn:active { background: rgba(255,255,255,0.4); }
+    #top-bar h1 { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #ff6b6b, #ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; letter-spacing: -0.5px; }
+    #top-bar h1 span { font-size: 13px; }
 
-    /* ── Filters ── */
-    #filters {
-      background: white; padding: 10px 12px 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.07); z-index: 99;
+    /* ===== FILTERS ===== */
+    #filter-bar {
+      position: fixed; top: 48px; left: 0; right: 0; z-index: 99;
+      display: flex; gap: 8px; padding: 6px 16px 8px; overflow-x: auto;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.9) 70%, transparent);
+      scrollbar-width: none;
     }
-    #prefecture-row { margin-bottom: 8px; }
-    #prefecture-select {
-      width: 100%; padding: 8px 12px;
-      border: 1.5px solid #e0e0e0; border-radius: 10px;
-      font-size: 14px; background: white; color: #333; outline: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+    #filter-bar::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      flex-shrink: 0; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      border: 1.5px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08);
+      color: #ccc; cursor: pointer; transition: all 0.2s; white-space: nowrap;
     }
-    #prefecture-select:focus { border-color: #FF6B6B; }
-    #category-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
-    #category-row::-webkit-scrollbar { display: none; }
-    .cat-chip {
-      flex-shrink: 0; padding: 5px 13px; border-radius: 20px;
-      font-size: 12px; font-weight: 700; border: 2px solid;
-      cursor: pointer; transition: all 0.15s; user-select: none;
-    }
-    .cat-chip:active { opacity: 0.75; }
+    .filter-chip.active { background: #ff6b6b; border-color: #ff6b6b; color: #fff; }
 
-    /* ── Content ── */
-    #content { flex: 1; position: relative; overflow: hidden; }
-    #map { position: absolute; inset: 0; }
-    #ranking-panel, #favorites-panel {
-      position: absolute; inset: 0; background: #f5f5f5;
-      overflow-y: auto; display: none; padding-bottom: 8px;
-    }
-    #ranking-panel.active, #favorites-panel.active { display: block; }
+    /* ===== MAP ===== */
+    #map { width: 100%; flex: 1; }
+    #map-view { display: flex; flex-direction: column; height: 100%; }
 
+    /* ===== VIEWS ===== */
+    #ranking-view, #favorites-view {
+      display: none; flex-direction: column; flex: 1; overflow: hidden;
+      padding-top: 48px;
+    }
     .list-header {
-      background: white; padding: 16px 16px 12px; margin-bottom: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07); position: sticky; top: 0; z-index: 10;
+      position: sticky; top: 48px; z-index: 50;
+      padding: 10px 16px 8px;
+      background: rgba(10,10,10,0.97);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 13px; color: #888;
     }
-    .list-header h2 { font-size: 16px; font-weight: 800; color: #1a1a1a; margin-bottom: 4px; }
-    .list-header p  { font-size: 12px; color: #aaa; }
-
+    .list-header strong { color: #fff; }
+    .list-body { overflow-y: auto; flex: 1; padding-bottom: 80px; }
     .pref-section-header {
-      padding: 10px 16px 6px; font-size: 13px; font-weight: 800; color: #555;
-      display: flex; align-items: center; gap: 6px;
-      position: sticky; top: 72px; background: #f5f5f5; z-index: 5;
+      position: sticky; top: 72px; z-index: 40;
+      padding: 8px 16px; font-size: 12px; font-weight: 700;
+      color: #ff6b6b; background: rgba(10,10,10,0.95);
+      border-bottom: 1px solid rgba(255,107,107,0.2);
+      letter-spacing: 0.5px;
     }
-    .pref-section-header::after { content:''; flex:1; height:1px; background:#e0e0e0; }
 
-    .store-list-item {
-      background: white; margin: 0 12px 8px; border-radius: 14px;
-      padding: 14px; display: flex; align-items: center; gap: 13px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07); cursor: pointer;
-      transition: transform 0.1s; position: relative;
+    /* ===== STORE ITEM ===== */
+    .store-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer; transition: background 0.15s;
     }
-    .store-list-item:active { transform: scale(0.98); }
-    .rank-num { font-size: 20px; font-weight: 900; color: #ddd; min-width: 28px; text-align: center; }
-    .rank-num.top1 { color: #FFD700; }
-    .rank-num.top2 { color: #C0C0C0; }
-    .rank-num.top3 { color: #CD7F32; }
-    .list-item-icon {
-      width: 44px; height: 44px; border-radius: 12px;
+    .store-item:active { background: rgba(255,255,255,0.05); }
+    .rank-badge {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
+      font-size: 12px; font-weight: 800;
     }
-    .list-item-info { flex: 1; min-width: 0; }
-    .list-item-name {
-      font-size: 14px; font-weight: 800; color: #1a1a1a; margin-bottom: 3px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    .rank-1 { background: #FFD700; color: #000; }
+    .rank-2 { background: #C0C0C0; color: #000; }
+    .rank-3 { background: #CD7F32; color: #fff; }
+    .rank-other { background: rgba(255,255,255,0.1); color: #888; font-size: 11px; }
+    .store-thumb {
+      flex-shrink: 0; width: 52px; height: 52px; border-radius: 10px;
+      object-fit: cover; background: #1a1a1a;
     }
-    .list-item-meta { font-size: 11px; color: #aaa; margin-bottom: 5px; }
-    .list-item-badge {
-      display: inline-block; padding: 2px 8px; border-radius: 8px;
-      font-size: 10px; font-weight: 800; color: white;
+    .store-info { flex: 1; min-width: 0; }
+    .store-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .store-meta { font-size: 11px; color: #888; margin-top: 2px; }
+    .store-score { flex-shrink: 0; text-align: right; }
+    .score-value { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, #ff6b6b, #ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .score-label { font-size: 9px; color: #666; }
+    .fav-btn-list {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: rgba(255,255,255,0.08); color: #888;
+      font-size: 16px; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
     }
-    .list-item-score { text-align: right; flex-shrink: 0; }
-    .list-item-score-val { font-size: 18px; font-weight: 900; color: #FF6B6B; line-height: 1; }
-    .list-item-score-unit { font-size: 10px; color: #FF6B6B; font-weight: 600; }
-    .list-item-fav {
-      position: absolute; top: 12px; right: 12px;
-      font-size: 18px; cursor: pointer; padding: 4px; line-height: 1;
-      background: none; border: none; z-index: 2;
-    }
+    .fav-btn-list.active { color: #ff6b6b; background: rgba(255,107,107,0.15); }
 
-    .empty-state { text-align: center; padding: 60px 20px; color: #bbb; }
-    .empty-state .emoji { font-size: 48px; margin-bottom: 12px; }
-    .empty-state p { font-size: 14px; font-weight: 600; }
-    .empty-state small { font-size: 12px; color: #ccc; }
-
-    /* ── Bottom Nav ── */
+    /* ===== BOTTOM NAV ===== */
     #bottom-nav {
-      background: white; display: flex;
-      border-top: 1px solid #f0f0f0;
-      box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
-      z-index: 200; padding-bottom: env(safe-area-inset-bottom, 0px);
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      display: flex; background: rgba(10,10,10,0.97);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: env(safe-area-inset-bottom, 0);
     }
     .nav-tab {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 10px 0 8px; cursor: pointer; border: none; background: none;
-      gap: 3px;
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 10px 4px 8px; cursor: pointer;
+      border: none; background: none; color: #555; transition: color 0.2s;
+      position: relative;
     }
-    .nav-tab:active { opacity: 0.6; }
-    .nav-tab-icon { font-size: 22px; line-height: 1; }
-    .nav-tab-label { font-size: 10px; font-weight: 700; color: #bbb; }
-    .nav-tab.active .nav-tab-label { color: #FF6B6B; }
-    .nav-tab-dot { width: 6px; height: 6px; background: #FF6B6B; border-radius: 50%; display: none; }
-    .nav-tab.has-fav .nav-tab-dot { display: block; }
-
-    /* ── Count badge ── */
-    #count-badge {
-      position: fixed; top: 128px; right: 12px;
-      background: white; border-radius: 12px; padding: 5px 10px;
-      font-size: 12px; color: #666;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.13); z-index: 99; pointer-events: none;
+    .nav-tab.active { color: #ff6b6b; }
+    .nav-icon { font-size: 22px; line-height: 1; }
+    .nav-label { font-size: 10px; margin-top: 3px; font-weight: 600; }
+    .nav-dot {
+      position: absolute; top: 8px; right: calc(50% - 14px);
+      width: 7px; height: 7px; border-radius: 50%; background: #ff6b6b;
+      display: none;
     }
-    #count-badge span { color: #FF6B6B; font-weight: 700; }
+    .nav-dot.show { display: block; }
 
-    /* ══════════════════════════════
-       Store Panel
-    ══════════════════════════════ */
-    #store-panel {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: white; border-radius: 20px 20px 0 0;
-      box-shadow: 0 -6px 24px rgba(0,0,0,0.15);
-      transform: translateY(100%);
-      transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 300; max-height: 82vh; overflow-y: auto;
-      padding-bottom: 32px;
+    /* ===== STORE MODAL ===== */
+    #store-modal {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      display: none; align-items: flex-end; justify-content: center;
     }
-    #store-panel.open { transform: translateY(0); }
+    #store-modal.open { display: flex; }
+    #modal-card {
+      background: #111; border-radius: 24px 24px 0 0;
+      width: 100%; max-width: 480px; max-height: 92dvh;
+      overflow-y: auto; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    /* ── Photo Carousel ── */
+    /* ===== CAROUSEL ===== */
     #photo-carousel-wrap {
       position: relative;
       width: 100%;
-      /* 4:3の比率で表示 */
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 1 / 1;
       overflow: hidden;
       background: #1a1a1a;
-      border-radius: 20px 20px 0 0;
+      border-radius: 24px 24px 0 0;
       touch-action: pan-y;
     }
     #photo-carousel-track {
@@ -180,760 +147,548 @@
       will-change: transform;
     }
     .carousel-slide {
-      /* 各スライドはコンテナの幅100%を占める・縮まない */
       flex: 0 0 100%;
       height: 100%;
       position: relative;
     }
     .carousel-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+      width: 100%; height: 100%; object-fit: cover; display: block;
     }
     .photo-type-label {
-      position: absolute; bottom: 38px; left: 12px;
-      background: rgba(0,0,0,0.52); color: white;
-      font-size: 11px; font-weight: 700; padding: 3px 10px;
-      border-radius: 20px; backdrop-filter: blur(4px);
+      position: absolute; bottom: 10px; left: 10px;
+      background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 10px; backdrop-filter: blur(4px);
     }
-    #photo-gradient {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
-      background: linear-gradient(transparent, rgba(0,0,0,0.4));
-      pointer-events: none; z-index: 2;
-    }
-    #photo-dots {
-      position: absolute; bottom: 12px; left: 0; right: 0;
-      display: flex; justify-content: center; gap: 5px; z-index: 3;
+    .carousel-dots {
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 5px;
     }
     .photo-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.45); transition: all 0.2s; cursor: pointer;
+      background: rgba(255,255,255,0.4); transition: all 0.2s; cursor: pointer;
     }
-    .photo-dot.active { background: white; width: 18px; border-radius: 3px; }
+    .photo-dot.active { background: #fff; transform: scale(1.3); }
     .carousel-arrow {
       position: absolute; top: 50%; transform: translateY(-50%);
       width: 32px; height: 32px; border-radius: 50%;
-      background: rgba(0,0,0,0.38); border: none; color: white;
-      font-size: 18px; cursor: pointer; z-index: 3;
-      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.5); border: none; color: #fff; font-size: 16px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
       backdrop-filter: blur(4px); transition: opacity 0.2s;
     }
-    .carousel-arrow:active { background: rgba(0,0,0,0.6); }
+    .carousel-arrow:disabled { opacity: 0.2; pointer-events: none; }
     #arrow-prev { left: 10px; }
     #arrow-next { right: 10px; }
 
-    /* Panel buttons */
-    #panel-close {
-      position: absolute; top: 12px; right: 14px;
-      width: 30px; height: 30px; background: rgba(0,0,0,0.42); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; border: none; font-size: 14px; color: white; font-weight: 700;
-      z-index: 4;
+    /* ===== MODAL BODY ===== */
+    #modal-body { padding: 16px 20px 100px; }
+    #modal-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    #modal-category { font-size: 13px; color: #ff6b6b; font-weight: 600; margin-bottom: 8px; }
+    #modal-address { font-size: 12px; color: #888; margin-bottom: 14px; }
+    .modal-score-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .modal-score-big { font-size: 40px; font-weight: 900; background: linear-gradient(135deg,#ff6b6b,#ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+    .modal-score-sub { font-size: 11px; color: #666; }
+    .score-bars { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .score-bar-row { display: flex; align-items: center; gap: 8px; }
+    .score-bar-label { font-size: 11px; color: #888; width: 56px; }
+    .score-bar-bg { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+    .score-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg,#ff6b6b,#ffd93d); }
+    .modal-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .modal-tag { padding: 4px 10px; border-radius: 12px; font-size: 11px; background: rgba(255,255,255,0.08); color: #aaa; }
+    #modal-fav-btn {
+      width: 100%; padding: 14px; border-radius: 14px; border: none;
+      font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      background: rgba(255,107,107,0.15); color: #ff6b6b;
     }
-    #panel-fav-btn {
-      position: absolute; top: 12px; right: 52px;
-      width: 30px; height: 30px; background: rgba(0,0,0,0.42); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; border: none; font-size: 16px;
-      transition: transform 0.15s; z-index: 4;
-    }
-    #panel-fav-btn:active { transform: scale(1.2); }
+    #modal-fav-btn.saved { background: #ff6b6b; color: #fff; }
 
-    /* Panel body */
-    #panel-drag-area { padding: 14px 0 8px; display: flex; justify-content: center; }
-    #panel-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; }
-    #panel-body { padding: 0 20px; }
-    #panel-category-badge {
-      display: inline-block; padding: 3px 11px; border-radius: 12px;
-      font-size: 11px; font-weight: 800; color: white; margin-bottom: 8px;
+    /* ===== MAP POPUP ===== */
+    .gm-style .gm-style-iw { background: transparent !important; padding: 0 !important; box-shadow: none !important; }
+    .gm-style .gm-style-iw-d { overflow: hidden !important; }
+    .gm-style .gm-style-iw-t::after { display: none; }
+    .gm-style .gm-ui-hover-effect { display: none !important; }
+    .map-popup {
+      background: #1a1a1a; border-radius: 16px; padding: 12px 14px;
+      min-width: 160px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
     }
-    #panel-name {
-      font-size: 20px; font-weight: 800; color: #1a1a1a;
-      margin-bottom: 5px; line-height: 1.3;
-    }
-    #panel-address {
-      font-size: 13px; color: #999; margin-bottom: 18px;
-      display: flex; align-items: flex-start; gap: 4px; line-height: 1.4;
-    }
-    #panel-score-box {
-      background: linear-gradient(135deg, #FFF0F0, #FFE4E4);
-      border-radius: 14px; padding: 16px; margin-bottom: 14px;
-      border: 1px solid #FFD0D0;
-    }
-    #panel-score-label { font-size: 11px; color: #FF6B6B; font-weight: 700; margin-bottom: 6px; }
-    #panel-score-num { display: flex; align-items: baseline; gap: 4px; }
-    #panel-score-value { font-size: 32px; font-weight: 900; color: #FF6B6B; line-height: 1; }
-    #panel-score-unit { font-size: 14px; color: #FF6B6B; font-weight: 600; }
-    #panel-stats { display: flex; gap: 10px; }
-    .stat-item { flex: 1; background: #f8f8f8; border-radius: 12px; padding: 12px; text-align: center; }
-    .stat-label { font-size: 10px; color: #aaa; margin-bottom: 4px; font-weight: 600; }
-    .stat-value { font-size: 16px; font-weight: 800; color: #444; }
+    .map-popup-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .map-popup-meta { font-size: 11px; color: #888; }
+    .map-popup-score { font-size: 18px; font-weight: 800; background: linear-gradient(135deg,#ff6b6b,#ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* Loading */
-    #loading {
-      position: fixed; inset: 0; background: white;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 999; gap: 16px;
-    }
-    #loading h2 { font-size: 22px; font-weight: 800; color: #FF6B6B; }
-    #loading p  { font-size: 14px; color: #aaa; }
-    .spinner {
-      width: 40px; height: 40px; border: 4px solid #FFE0E0;
-      border-top-color: #FF6B6B; border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes heartPop {
-      0%   { transform: scale(1); }
-      40%  { transform: scale(1.4); }
-      100% { transform: scale(1); }
-    }
+    /* ===== EMPTY STATE ===== */
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; color: #555; gap: 8px; }
+    .empty-state .empty-icon { font-size: 40px; }
+    .empty-state p { font-size: 14px; }
+
+    /* ===== HEART ANIMATION ===== */
+    @keyframes heartPop { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)} }
     .heart-pop { animation: heartPop 0.3s ease; }
   </style>
 </head>
 <body>
 
-<div id="loading">
-  <div class="spinner"></div>
-  <h2>🗺️ バズりマップ</h2>
-  <p>地図を読み込み中...</p>
+<!-- TOP BAR -->
+<div id="top-bar">
+  <h1>🔥 バズりマップ <span>β</span></h1>
 </div>
 
-<div id="app">
-  <div id="header">
-    <h1>🗺️ バズりマップ</h1>
-    <button id="locate-btn" onclick="goToCurrentLocation()">📍 現在地</button>
-  </div>
-
-  <div id="filters">
-    <div id="prefecture-row">
-      <select id="prefecture-select" onchange="onPrefectureChange()">
-        <option value="all">📍 全国</option>
-        <optgroup label="北海道・東北">
-          <option value="北海道">北海道</option><option value="青森県">青森県</option>
-          <option value="岩手県">岩手県</option><option value="宮城県">宮城県</option>
-          <option value="秋田県">秋田県</option><option value="山形県">山形県</option>
-          <option value="福島県">福島県</option>
-        </optgroup>
-        <optgroup label="関東">
-          <option value="茨城県">茨城県</option><option value="栃木県">栃木県</option>
-          <option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option>
-          <option value="千葉県">千葉県</option><option value="東京都">東京都</option>
-          <option value="神奈川県">神奈川県</option>
-        </optgroup>
-        <optgroup label="中部">
-          <option value="新潟県">新潟県</option><option value="富山県">富山県</option>
-          <option value="石川県">石川県</option><option value="福井県">福井県</option>
-          <option value="山梨県">山梨県</option><option value="長野県">長野県</option>
-          <option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option>
-          <option value="愛知県">愛知県</option>
-        </optgroup>
-        <optgroup label="近畿">
-          <option value="三重県">三重県</option><option value="滋賀県">滋賀県</option>
-          <option value="京都府">京都府</option><option value="大阪府">大阪府</option>
-          <option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option>
-          <option value="和歌山県">和歌山県</option>
-        </optgroup>
-        <optgroup label="中国・四国">
-          <option value="鳥取県">鳥取県</option><option value="島根県">島根県</option>
-          <option value="岡山県">岡山県</option><option value="広島県">広島県</option>
-          <option value="山口県">山口県</option><option value="徳島県">徳島県</option>
-          <option value="香川県">香川県</option><option value="愛媛県">愛媛県</option>
-          <option value="高知県">高知県</option>
-        </optgroup>
-        <optgroup label="九州・沖縄">
-          <option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option>
-          <option value="長崎県">長崎県</option><option value="熊本県">熊本県</option>
-          <option value="大分県">大分県</option><option value="宮崎県">宮崎県</option>
-          <option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option>
-        </optgroup>
-      </select>
-    </div>
-    <div id="category-row"></div>
-  </div>
-
-  <div id="content">
-    <div id="map"></div>
-    <div id="ranking-panel">
-      <div class="list-header">
-        <h2>🏆 SNS人気ランキング</h2>
-        <p id="ranking-desc"></p>
-      </div>
-      <div id="ranking-list"></div>
-    </div>
-    <div id="favorites-panel">
-      <div class="list-header">
-        <h2>❤️ お気に入り</h2>
-        <p>ハートを押して保存したお店</p>
-      </div>
-      <div id="favorites-list"></div>
-    </div>
-  </div>
-
-  <div id="bottom-nav">
-    <button class="nav-tab active" id="tab-map" onclick="switchTab('map')">
-      <span class="nav-tab-icon">🗺️</span>
-      <span class="nav-tab-label">マップ</span>
-    </button>
-    <button class="nav-tab" id="tab-ranking" onclick="switchTab('ranking')">
-      <span class="nav-tab-icon">🏆</span>
-      <span class="nav-tab-label">ランキング</span>
-    </button>
-    <button class="nav-tab" id="tab-favorites" onclick="switchTab('favorites')">
-      <span class="nav-tab-icon">❤️</span>
-      <span class="nav-tab-label">お気に入り</span>
-      <span class="nav-tab-dot"></span>
-    </button>
-  </div>
+<!-- FILTER BAR -->
+<div id="filter-bar">
+  <div class="filter-chip active" data-pref="all" onclick="selectPref('all')">🗾 全国</div>
+  <div class="filter-chip" data-pref="東京都" onclick="selectPref('東京都')">東京都</div>
+  <div class="filter-chip" data-pref="大阪府" onclick="selectPref('大阪府')">大阪府</div>
+  <div class="filter-chip" data-pref="京都府" onclick="selectPref('京都府')">京都府</div>
+  <div class="filter-chip" data-pref="神奈川県" onclick="selectPref('神奈川県')">神奈川県</div>
+  <div class="filter-chip" data-pref="福岡県" onclick="selectPref('福岡県')">福岡県</div>
+  <div class="filter-chip" data-pref="北海道" onclick="selectPref('北海道')">北海道</div>
+  <div class="filter-chip" data-pref="愛知県" onclick="selectPref('愛知県')">愛知県</div>
+  <div class="filter-chip" data-pref="沖縄県" onclick="selectPref('沖縄県')">沖縄県</div>
 </div>
 
-<!-- 店舗詳細パネル -->
-<div id="store-panel">
-  <div id="photo-carousel-wrap">
-    <div id="photo-carousel-track"></div>
-    <div id="photo-gradient"></div>
-    <div id="photo-dots"></div>
-    <button class="carousel-arrow" id="arrow-prev" onclick="carouselPrev()">‹</button>
-    <button class="carousel-arrow" id="arrow-next" onclick="carouselNext()">›</button>
-    <button id="panel-fav-btn" onclick="toggleFavFromPanel()">🤍</button>
-    <button id="panel-close" onclick="closePanel()">✕</button>
+<!-- MAP VIEW -->
+<div id="map-view">
+  <div id="map"></div>
+</div>
+
+<!-- RANKING VIEW -->
+<div id="ranking-view">
+  <div class="list-header" id="ranking-header">
+    <strong id="ranking-title">🏆 全国ランキング</strong>
+    <span id="ranking-count"></span>
   </div>
-  <div id="panel-drag-area"><div id="panel-handle"></div></div>
-  <div id="panel-body">
-    <div id="panel-category-badge"></div>
-    <div id="panel-name"></div>
-    <div id="panel-address">📍 <span id="panel-address-text"></span></div>
-    <div id="panel-score-box">
-      <div id="panel-score-label">🔥 SNS 人気スコア</div>
-      <div id="panel-score-num">
-        <span id="panel-score-value"></span>
-        <span id="panel-score-unit">pt</span>
-      </div>
+  <div class="list-body" id="ranking-body"></div>
+</div>
+
+<!-- FAVORITES VIEW -->
+<div id="favorites-view">
+  <div class="list-header">
+    <strong>❤️ お気に入り</strong>
+  </div>
+  <div class="list-body" id="favorites-body"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav id="bottom-nav">
+  <button class="nav-tab active" id="tab-map" onclick="switchTab('map')">
+    <span class="nav-icon">🗺️</span>
+    <span class="nav-label">マップ</span>
+  </button>
+  <button class="nav-tab" id="tab-ranking" onclick="switchTab('ranking')">
+    <span class="nav-icon">🏆</span>
+    <span class="nav-label">ランキング</span>
+  </button>
+  <button class="nav-tab" id="tab-favorites" onclick="switchTab('favorites')">
+    <span class="nav-icon">❤️</span>
+    <span class="nav-label">お気に入り</span>
+    <span class="nav-dot" id="fav-dot"></span>
+  </button>
+</nav>
+
+<!-- STORE MODAL -->
+<div id="store-modal" onclick="closeModal(event)">
+  <div id="modal-card">
+    <div id="photo-carousel-wrap">
+      <div id="photo-carousel-track"></div>
+      <button class="carousel-arrow" id="arrow-prev" onclick="goToSlide(carouselIndex-1)">‹</button>
+      <button class="carousel-arrow" id="arrow-next" onclick="goToSlide(carouselIndex+1)">›</button>
+      <div class="carousel-dots" id="carousel-dots"></div>
     </div>
-    <div id="panel-stats">
-      <div class="stat-item">
-        <div class="stat-label">📸 Instagram</div>
-        <div class="stat-value" id="panel-instagram"></div>
+    <div id="modal-body">
+      <div id="modal-name"></div>
+      <div id="modal-category"></div>
+      <div id="modal-address"></div>
+      <div class="modal-score-row">
+        <div>
+          <div class="modal-score-big" id="modal-score-big"></div>
+          <div class="modal-score-sub">バズりスコア</div>
+        </div>
+        <div class="score-bars" id="modal-score-bars"></div>
       </div>
-      <div class="stat-item">
-        <div class="stat-label">🎵 TikTok</div>
-        <div class="stat-value" id="panel-tiktok"></div>
-      </div>
+      <div class="modal-tags" id="modal-tags"></div>
+      <button id="modal-fav-btn" onclick="toggleFavFromModal()">❤️ お気に入りに追加</button>
     </div>
   </div>
 </div>
-
-<div id="count-badge"><span id="count-num">0</span> 件表示中</div>
 
 <script>
-/* ====== PHOTO SETS ====== */
-const CATEGORY_PHOTO_SETS = {
-  'カフェ': [
-    { url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&h=600&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&h=600&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=800&h=600&fit=crop&auto=format', label: '内観' },
-  ],
-  'ラーメン': [
-    { url: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=800&h=600&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800&h=600&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=800&h=600&fit=crop&auto=format', label: '内観' },
-  ],
-  '居酒屋': [
-    { url: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800&h=600&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=800&h=600&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&auto=format', label: '内観' },
-  ],
-  '焼肉': [
-    { url: 'https://images.unsplash.com/photo-1544025162-d76538b367e0?w=800&h=600&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop&auto=format', label: '内観' },
-  ],
-  'スイーツ': [
-    { url: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=800&h=600&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800&h=600&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&h=600&fit=crop&auto=format', label: '内観' },
-  ],
-  '寿司': [
-    { url: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&h=600&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1617196034192-a8e70b9a35af?w=800&h=600&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=600&fit=crop&auto=format', label: '内観' },
-  ],
-  '洋食': [
-    { url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=800&h=600&fit=crop&auto=format', label: '内観' },
-  ],
-  '中華': [
-    { url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&h=600&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop&auto=format', label: '内観' },
-  ],
-};
-
-const DEFAULT_PHOTOS = [
-  { url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=600&fit=crop&auto=format', label: '料理' },
-  { url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop&auto=format', label: '外観' },
-  { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop&auto=format', label: '内観' },
-];
-
-/* ====== DATA ====== */
-const CATEGORIES = [
-  { name: 'すべて',  color: '#888888' },
-  { name: 'カフェ',  color: '#52B788' },
-  { name: 'ラーメン', color: '#F4A829' },
-  { name: '居酒屋',  color: '#FF6B6B' },
-  { name: '焼肉',   color: '#C44D58' },
-  { name: 'スイーツ', color: '#F48FB1' },
-  { name: '寿司',   color: '#42A5F5' },
-  { name: '洋食',   color: '#9575CD' },
-  { name: '中華',   color: '#FF8C42' },
-];
-const CATEGORY_EMOJI = {
-  'カフェ':'☕','ラーメン':'🍜','居酒屋':'🍺',
-  '焼肉':'🥩','スイーツ':'🍰','寿司':'🍣','洋食':'🍽️','中華':'🥟',
-};
 const PREF_ORDER = [
   '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',
   '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
-  '新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県',
-  '三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県',
-  '鳥取県','島根県','岡山県','広島県','山口県',
-  '徳島県','香川県','愛媛県','高知県',
-  '福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県',
-];
-const STORES = [
-  { id:1,  name:'渋谷ビーントゥバー',              address:'東京都渋谷区神南1-12-3',               prefecture:'東京都',  category:'カフェ',   lat:35.6615, lng:139.7021, score:9850, instagram:3200,  tiktok:1250000 },
-  { id:2,  name:'新宿 煮干し中華そば 麺屋一心',      address:'東京都新宿区歌舞伎町2-8-5',             prefecture:'東京都',  category:'ラーメン', lat:35.6940, lng:139.7034, score:8720, instagram:2800,  tiktok:980000  },
-  { id:3,  name:'代官山パティスリー',               address:'東京都渋谷区猿楽町18-5',                prefecture:'東京都',  category:'スイーツ', lat:35.6490, lng:139.7031, score:7600, instagram:4500,  tiktok:720000  },
-  { id:4,  name:'六本木 炭火焼肉 月',              address:'東京都港区六本木6-10-1',                prefecture:'東京都',  category:'焼肉',    lat:35.6627, lng:139.7310, score:8100, instagram:1900,  tiktok:860000  },
-  { id:5,  name:'銀座 寿司処 江戸前',              address:'東京都中央区銀座4-6-1',                 prefecture:'東京都',  category:'寿司',    lat:35.6713, lng:139.7650, score:9200, instagram:2300,  tiktok:1050000 },
-  { id:6,  name:'上野 天龍 中華料理',              address:'東京都台東区上野4-8-2',                 prefecture:'東京都',  category:'中華',    lat:35.7089, lng:139.7741, score:6800, instagram:1500,  tiktok:630000  },
-  { id:7,  name:'恵比寿 ビストロ ル・ソレイユ',      address:'東京都渋谷区恵比寿1-8-5',               prefecture:'東京都',  category:'洋食',    lat:35.6467, lng:139.7100, score:7300, instagram:2700,  tiktok:760000  },
-  { id:8,  name:'下北沢 角打ちバー 縁',             address:'東京都世田谷区北沢2-7-15',              prefecture:'東京都',  category:'居酒屋',  lat:35.6615, lng:139.6681, score:7800, instagram:2100,  tiktok:810000  },
-  { id:9,  name:'道頓堀 風来坊',                  address:'大阪府大阪市中央区道頓堀1-7-22',         prefecture:'大阪府',  category:'居酒屋',  lat:34.6686, lng:135.5029, score:8300, instagram:3100,  tiktok:950000  },
-  { id:10, name:'梅田 朝活カフェ DAWN',            address:'大阪府大阪市北区梅田1-13-13',            prefecture:'大阪府',  category:'カフェ',   lat:34.7024, lng:135.4959, score:7400, instagram:2800,  tiktok:680000  },
-  { id:11, name:'新大阪 ラーメン赤鬼',              address:'大阪府大阪市淀川区西中島5-14',           prefecture:'大阪府',  category:'ラーメン', lat:34.7333, lng:135.4999, score:8850, instagram:3400,  tiktok:1350000 },
-  { id:12, name:'心斎橋 鉄板焼き 炎',              address:'大阪府大阪市中央区心斎橋筋2-3-10',       prefecture:'大阪府',  category:'焼肉',    lat:34.6721, lng:135.5009, score:8600, instagram:2900,  tiktok:1100000 },
-  { id:13, name:'なんば スイーツ工房 糖花',         address:'大阪府大阪市中央区難波3-5-2',            prefecture:'大阪府',  category:'スイーツ', lat:34.6650, lng:135.5011, score:7900, instagram:5100,  tiktok:1650000 },
-  { id:14, name:'祇園 和カフェ 撫子',              address:'京都府京都市東山区祇園町北側347',          prefecture:'京都府',  category:'カフェ',   lat:35.0038, lng:135.7729, score:9100, instagram:6200,  tiktok:1800000 },
-  { id:15, name:'嵐山 抹茶スイーツ工房',            address:'京都府京都市右京区嵯峨天龍寺芒ノ馬場町20', prefecture:'京都府',  category:'スイーツ', lat:35.0094, lng:135.6724, score:8600, instagram:7800,  tiktok:2300000 },
-  { id:16, name:'錦市場 京寿司 きた村',             address:'京都府京都市中京区錦小路通',             prefecture:'京都府',  category:'寿司',    lat:35.0051, lng:135.7644, score:8200, instagram:4500,  tiktok:1200000 },
-  { id:17, name:'中洲 屋台 博多とんこつ',           address:'福岡県福岡市博多区中洲2丁目',            prefecture:'福岡県',  category:'ラーメン', lat:33.5904, lng:130.4017, score:9300, instagram:4100,  tiktok:1600000 },
-  { id:18, name:'天神 焼き鳥 鶴亀',               address:'福岡県福岡市中央区天神2-8-41',           prefecture:'福岡県',  category:'居酒屋',  lat:33.5892, lng:130.3990, score:7900, instagram:2200,  tiktok:820000  },
-  { id:19, name:'博多 もつ鍋 やま中',              address:'福岡県福岡市博多区下川端町3-1',           prefecture:'福岡県',  category:'洋食',    lat:33.5943, lng:130.4074, score:8700, instagram:3600,  tiktok:1450000 },
-  { id:20, name:'横浜中華街 四川楼',               address:'神奈川県横浜市中区山下町142',             prefecture:'神奈川県', category:'中華',   lat:35.4424, lng:139.6484, score:8400, instagram:3500,  tiktok:1100000 },
-  { id:21, name:'鎌倉 湘南バーガー',               address:'神奈川県鎌倉市小町2-7-32',              prefecture:'神奈川県', category:'洋食',   lat:35.3198, lng:139.5465, score:7200, instagram:4800,  tiktok:950000  },
-  { id:22, name:'みなとみらい 海辺カフェ WAVE',      address:'神奈川県横浜市西区みなとみらい2-1',       prefecture:'神奈川県', category:'カフェ',  lat:35.4567, lng:139.6356, score:7600, instagram:5900,  tiktok:1400000 },
-  { id:23, name:'札幌 北海道ジンギスカン 羊ヶ丘',    address:'北海道札幌市中央区南4条西4丁目',          prefecture:'北海道',  category:'焼肉',    lat:43.0552, lng:141.3508, score:8900, instagram:3900,  tiktok:1450000 },
-  { id:24, name:'函館 海鮮丼 朝市',               address:'北海道函館市若松町9-19',                prefecture:'北海道',  category:'寿司',    lat:41.7748, lng:140.7289, score:9400, instagram:5200,  tiktok:2050000 },
-  { id:25, name:'すすきの 締めラーメン 雪ほたる',    address:'北海道札幌市中央区南6条西4丁目',          prefecture:'北海道',  category:'ラーメン', lat:43.0503, lng:141.3523, score:8500, instagram:2900,  tiktok:1180000 },
-  { id:26, name:'名古屋 矢場とん 本店',            address:'愛知県名古屋市中区大須3-6-18',            prefecture:'愛知県',  category:'洋食',    lat:35.1586, lng:136.9043, score:8200, instagram:2900,  tiktok:870000  },
-  { id:27, name:'栄 喫茶店 モーニング玉子',         address:'愛知県名古屋市中区錦3-14-15',            prefecture:'愛知県',  category:'カフェ',   lat:35.1689, lng:136.9094, score:7100, instagram:2100,  tiktok:560000  },
-  { id:28, name:'国際通り 沖縄そば やんばる',        address:'沖縄県那覇市牧志1-4-59',               prefecture:'沖縄県',  category:'ラーメン', lat:26.2187, lng:127.6895, score:8500, instagram:4300,  tiktok:1200000 },
-  { id:29, name:'美ら海カフェ テラス',              address:'沖縄県国頭郡本部町石川424',              prefecture:'沖縄県',  category:'カフェ',   lat:26.6940, lng:127.8784, score:9600, instagram:8900,  tiktok:3200000 },
-  { id:30, name:'青森 煮干しラーメン 長尾中華そば',   address:'青森県青森市古川1-15-6',               prefecture:'青森県',  category:'ラーメン', lat:40.8237, lng:140.7401, score:8700, instagram:3200,  tiktok:1350000 },
-  { id:31, name:'弘前 りんごカフェ HIROSAKI',       address:'青森県弘前市土手町52',                  prefecture:'青森県',  category:'カフェ',   lat:40.6036, lng:140.4644, score:7900, instagram:5100,  tiktok:1800000 },
-  { id:32, name:'盛岡 冷麺 盛楼閣',               address:'岩手県盛岡市盛岡駅前通15-5',             prefecture:'岩手県',  category:'ラーメン', lat:39.7019, lng:141.1388, score:9000, instagram:4200,  tiktok:1650000 },
-  { id:33, name:'盛岡 福田パン 本店',              address:'岩手県盛岡市長田町12-11',               prefecture:'岩手県',  category:'スイーツ', lat:39.7006, lng:141.1396, score:8200, instagram:6300,  tiktok:2100000 },
-  { id:34, name:'仙台 牛タン 喜助 駅前本店',        address:'宮城県仙台市青葉区中央1-1-1',            prefecture:'宮城県',  category:'焼肉',    lat:38.2604, lng:140.8827, score:9400, instagram:5500,  tiktok:2200000 },
-  { id:35, name:'仙台 ずんだ茶寮',                address:'宮城県仙台市青葉区中央1-1-1',            prefecture:'宮城県',  category:'スイーツ', lat:38.2599, lng:140.8831, score:8800, instagram:7200,  tiktok:2900000 },
-  { id:36, name:'秋田 比内地鶏 きりたんぽ鍋 炉端',   address:'秋田県秋田市中通3-6-12',               prefecture:'秋田県',  category:'居酒屋',  lat:39.7186, lng:140.1023, score:8100, instagram:2900,  tiktok:980000  },
-  { id:37, name:'稲庭 佐藤養助 うどん 総本店',       address:'秋田県湯沢市稲庭町稲庭191',             prefecture:'秋田県',  category:'ラーメン', lat:39.1456, lng:140.5119, score:8600, instagram:3800,  tiktok:1250000 },
-  { id:38, name:'山形 芋煮会 河原屋',              address:'山形県山形市鉄砲町1-3-25',              prefecture:'山形県',  category:'居酒屋',  lat:38.2404, lng:140.3634, score:7800, instagram:3100,  tiktok:890000  },
-  { id:39, name:'米沢 牛肉料理 登起波',             address:'山形県米沢市丸の内1-3-60',              prefecture:'山形県',  category:'焼肉',    lat:37.9202, lng:140.1150, score:8900, instagram:4600,  tiktok:1700000 },
-  { id:40, name:'福島 円盤餃子 照井 本店',          address:'福島県福島市栄町6-23',                  prefecture:'福島県',  category:'中華',    lat:37.7605, lng:140.4736, score:8300, instagram:3700,  tiktok:1300000 },
-  { id:41, name:'会津 鶴ヶ城 壱番館カフェ',         address:'福島県会津若松市追手町1-1',              prefecture:'福島県',  category:'カフェ',   lat:37.4965, lng:139.9314, score:7500, instagram:4900,  tiktok:1550000 },
-  { id:42, name:'水戸 スタミナラーメン 天狗',        address:'茨城県水戸市南町2-6-21',               prefecture:'茨城県',  category:'ラーメン', lat:36.3418, lng:140.4468, score:7600, instagram:2500,  tiktok:820000  },
-  { id:43, name:'つくば ステーキ宮 本店',           address:'茨城県つくば市二の宮2-16-2',             prefecture:'茨城県',  category:'洋食',    lat:36.0838, lng:140.0774, score:7200, instagram:2100,  tiktok:710000  },
-  { id:44, name:'宇都宮 餃子 正嗣 宮島本店',        address:'栃木県宇都宮市馬場通り4-2-3',            prefecture:'栃木県',  category:'中華',    lat:36.5671, lng:139.8928, score:9100, instagram:5800,  tiktok:2400000 },
-  { id:45, name:'日光 カフェ 匠庵',               address:'栃木県日光市上鉢石町1019',              prefecture:'栃木県',  category:'カフェ',   lat:36.7484, lng:139.5986, score:7800, instagram:5200,  tiktok:1700000 },
-  { id:46, name:'高崎 だるまラーメン 本店',          address:'群馬県高崎市鞘町22',                   prefecture:'群馬県',  category:'ラーメン', lat:36.3232, lng:139.0030, score:7900, instagram:3100,  tiktok:1050000 },
-  { id:47, name:'草津温泉 カフェ 湯けむり',          address:'群馬県吾妻郡草津町草津464',              prefecture:'群馬県',  category:'カフェ',   lat:36.6217, lng:138.5963, score:8400, instagram:6100,  tiktok:2100000 },
-  { id:48, name:'大宮 煮干しまぜそば 武蔵',          address:'埼玉県さいたま市大宮区宮町1-38',          prefecture:'埼玉県',  category:'ラーメン', lat:35.9063, lng:139.6234, score:8200, instagram:3500,  tiktok:1150000 },
-  { id:49, name:'川越 芋スイーツ 菓子屋横丁',        address:'埼玉県川越市元町2-7-3',                prefecture:'埼玉県',  category:'スイーツ', lat:35.9251, lng:139.4853, score:8700, instagram:7400,  tiktok:2600000 },
-  { id:50, name:'勝浦 海鮮丼 大漁旗',              address:'千葉県勝浦市墨名593',                   prefecture:'千葉県',  category:'寿司',    lat:35.1527, lng:140.3175, score:8500, instagram:4900,  tiktok:1650000 },
-  { id:51, name:'成田 うなぎ 川豊 本店',            address:'千葉県成田市仲町386',                   prefecture:'千葉県',  category:'洋食',    lat:35.7742, lng:140.3179, score:8900, instagram:5600,  tiktok:2050000 },
-  { id:52, name:'新潟 へぎそば 由屋 本店',           address:'新潟県新潟市中央区東堀前通7-1079',       prefecture:'新潟県',  category:'ラーメン', lat:37.9161, lng:139.0428, score:8300, instagram:3400,  tiktok:1100000 },
-  { id:53, name:'新潟 タレカツ丼 とんかつ太郎',       address:'新潟県新潟市中央区弁天1-4-27',           prefecture:'新潟県',  category:'洋食',    lat:37.9063, lng:139.0498, score:7900, instagram:2900,  tiktok:950000  },
-  { id:54, name:'富山 白えびラーメン 麺家いろは',      address:'富山県富山市桜橋通り2-17',              prefecture:'富山県',  category:'ラーメン', lat:36.6953, lng:137.2113, score:8600, instagram:3700,  tiktok:1350000 },
-  { id:55, name:'富山 ます寿し 源 総本店',           address:'富山県富山市大泉本町1-8-10',             prefecture:'富山県',  category:'寿司',    lat:36.7024, lng:137.2079, score:8100, instagram:4100,  tiktok:1500000 },
-  { id:56, name:'金沢 近江町市場 海鮮処',            address:'石川県金沢市上近江町50',                prefecture:'石川県',  category:'寿司',    lat:36.5721, lng:136.6538, score:9300, instagram:7200,  tiktok:2800000 },
-  { id:57, name:'金沢 ひがし茶屋街 町家カフェ 箔座',   address:'石川県金沢市東山1-13-10',              prefecture:'石川県',  category:'カフェ',   lat:36.5779, lng:136.6626, score:9000, instagram:8500,  tiktok:3100000 },
-  { id:58, name:'福井 ソースカツ丼 ヨーロッパ軒',      address:'福井県福井市順化1-7-17',               prefecture:'福井県',  category:'洋食',    lat:36.0652, lng:136.2217, score:8500, instagram:4300,  tiktok:1600000 },
-  { id:59, name:'敦賀 越前ガニ料理 松葉',            address:'福井県敦賀市神楽町1-4-10',              prefecture:'福井県',  category:'寿司',    lat:35.6449, lng:136.0557, score:8800, instagram:3900,  tiktok:1400000 },
-  { id:60, name:'甲府 ほうとう 小作 甲府駅前店',      address:'山梨県甲府市中央1-6-11',               prefecture:'山梨県',  category:'ラーメン', lat:35.6635, lng:138.5685, score:8400, instagram:4800,  tiktok:1700000 },
-  { id:61, name:'河口湖 富士山ビューカフェ FUJIKAZE', address:'山梨県南都留郡富士河口湖町船津3635',      prefecture:'山梨県',  category:'カフェ',   lat:35.5097, lng:138.7531, score:9500, instagram:11200, tiktok:4200000 },
-  { id:62, name:'松本 山賊焼き 山の神 本店',          address:'長野県松本市大手4-3-13',               prefecture:'長野県',  category:'居酒屋',  lat:36.2381, lng:137.9719, score:8200, instagram:3600,  tiktok:1200000 },
-  { id:63, name:'善光寺 門前カフェ 藤屋御本陳',        address:'長野県長野市大門町80',                  prefecture:'長野県',  category:'カフェ',   lat:36.6612, lng:138.1884, score:8700, instagram:6500,  tiktok:2300000 },
-  { id:64, name:'高山 飛騨牛 割烹 鳩谷',             address:'岐阜県高山市花里町4-60',               prefecture:'岐阜県',  category:'焼肉',    lat:36.1399, lng:137.2513, score:9200, instagram:5900,  tiktok:2100000 },
-  { id:65, name:'岐阜 鶏ちゃん 坂本屋',              address:'岐阜県下呂市萩原町羽根1551',             prefecture:'岐阜県',  category:'居酒屋',  lat:35.8079, lng:137.2454, score:7800, instagram:3200,  tiktok:1050000 },
-  { id:66, name:'静岡 さわやか げんこつハンバーグ',    address:'静岡県静岡市葵区黒金町24-1',             prefecture:'静岡県',  category:'洋食',    lat:34.9756, lng:138.3828, score:9600, instagram:12000, tiktok:5000000 },
-  { id:67, name:'浜松 うなぎ 藤田',                address:'静岡県浜松市中区鍛冶町1-7',              prefecture:'静岡県',  category:'洋食',    lat:34.7108, lng:137.7261, score:8500, instagram:4100,  tiktok:1450000 },
-  { id:68, name:'伊勢 赤福 本店',                  address:'三重県伊勢市宇治中之切町26',              prefecture:'三重県',  category:'スイーツ', lat:34.4557, lng:136.7254, score:9800, instagram:14500, tiktok:5800000 },
-  { id:69, name:'松阪 松阪牛 和田金 本店',            address:'三重県松阪市中町1878',                  prefecture:'三重県',  category:'焼肉',    lat:34.5780, lng:136.5271, score:9300, instagram:6200,  tiktok:2400000 },
-  { id:70, name:'大津 琵琶湖ビューカフェ 叶匠壽庵',    address:'滋賀県大津市大萱1-16-5',               prefecture:'滋賀県',  category:'カフェ',   lat:35.0045, lng:135.8686, score:8300, instagram:5700,  tiktok:2000000 },
-  { id:71, name:'彦根 近江牛 千成亭 本店',            address:'滋賀県彦根市本町2-1-3',                prefecture:'滋賀県',  category:'焼肉',    lat:35.2758, lng:136.2528, score:8800, instagram:4300,  tiktok:1600000 },
-  { id:72, name:'神戸南京町 老祥記 豚まん',           address:'兵庫県神戸市中央区元町通2-1-14',         prefecture:'兵庫県',  category:'中華',    lat:34.6906, lng:135.1840, score:9200, instagram:7800,  tiktok:3200000 },
-  { id:73, name:'神戸 元町 ゴーフル 本店',            address:'兵庫県神戸市中央区元町通1-7-2',          prefecture:'兵庫県',  category:'スイーツ', lat:34.6887, lng:135.1867, score:8100, instagram:5400,  tiktok:1900000 },
-  { id:74, name:'奈良 中谷堂 よもぎ餅',              address:'奈良県奈良市橋本町29',                  prefecture:'奈良県',  category:'スイーツ', lat:34.6851, lng:135.8327, score:9400, instagram:9200,  tiktok:3800000 },
-  { id:75, name:'吉野 柿の葉寿司 平宗 本店',          address:'奈良県吉野郡吉野町吉野山799',            prefecture:'奈良県',  category:'寿司',    lat:34.3704, lng:135.8592, score:8200, instagram:4100,  tiktok:1350000 },
-  { id:76, name:'和歌山 中華そば マルショウ',          address:'和歌山県和歌山市有本366-1',              prefecture:'和歌山県', category:'ラーメン', lat:34.2260, lng:135.1675, score:8700, instagram:4600,  tiktok:1700000 },
-  { id:77, name:'那智勝浦 マグロ料理 桂城',            address:'和歌山県東牟婁郡那智勝浦町築地3-2',       prefecture:'和歌山県', category:'寿司',    lat:33.6276, lng:135.9380, score:8400, instagram:5200,  tiktok:1900000 },
-  { id:78, name:'鳥取 砂丘 らっきょうカフェ',          address:'鳥取県鳥取市福部町湯山2164-1',           prefecture:'鳥取県',  category:'カフェ',   lat:35.5383, lng:134.2367, score:8000, instagram:5800,  tiktok:2100000 },
-  { id:79, name:'境港 水木しげるロード 漁師小屋',       address:'鳥取県境港市本町3',                    prefecture:'鳥取県',  category:'寿司',    lat:35.5442, lng:133.2328, score:8600, instagram:6100,  tiktok:2300000 },
-  { id:80, name:'松江 宍道湖 しじみ茶漬け 和喜多',      address:'島根県松江市末次本町14',                prefecture:'島根県',  category:'洋食',    lat:35.4723, lng:133.0505, score:8200, instagram:3900,  tiktok:1300000 },
-  { id:81, name:'出雲大社 割子そば 荒木屋',            address:'島根県出雲市大社町杵築南775',            prefecture:'島根県',  category:'ラーメン', lat:35.4018, lng:132.6854, score:8800, instagram:5400,  tiktok:2000000 },
-  { id:82, name:'岡山 ままかり押し寿司 つぼや',         address:'岡山県岡山市北区表町1-5-1',              prefecture:'岡山県',  category:'寿司',    lat:34.6618, lng:133.9344, score:8100, instagram:3700,  tiktok:1200000 },
-  { id:83, name:'倉敷美観地区 カフェ 星野仙平',         address:'岡山県倉敷市本町4-1',                  prefecture:'岡山県',  category:'カフェ',   lat:34.5951, lng:133.7715, score:8900, instagram:7600,  tiktok:2900000 },
-  { id:84, name:'広島 お好み焼き みっちゃん 総本店',    address:'広島県広島市中区八丁堀6-7',              prefecture:'広島県',  category:'洋食',    lat:34.3963, lng:132.4596, score:9500, instagram:8900,  tiktok:3600000 },
-  { id:85, name:'宮島 牡蠣小屋 かき船 大黒屋',         address:'広島県廿日市市宮島町505',               prefecture:'広島県',  category:'寿司',    lat:34.2961, lng:132.3196, score:9200, instagram:9500,  tiktok:3900000 },
-  { id:86, name:'下関 ふぐ料理 春帆楼',               address:'山口県下関市阿弥陀寺町4-2',              prefecture:'山口県',  category:'寿司',    lat:33.9533, lng:130.9430, score:9100, instagram:5200,  tiktok:1900000 },
-  { id:87, name:'萩 萩焼カフェ 春日屋',               address:'山口県萩市呉服町1-51',                  prefecture:'山口県',  category:'カフェ',   lat:34.4076, lng:131.3991, score:7800, instagram:4300,  tiktok:1500000 },
-  { id:88, name:'徳島 ラーメン いのたに 本店',          address:'徳島県徳島市西大工町4-25',              prefecture:'徳島県',  category:'ラーメン', lat:34.0760, lng:134.5598, score:8600, instagram:4100,  tiktok:1500000 },
-  { id:89, name:'鳴門 なると金時スイーツ 大谷焼の里',    address:'徳島県鳴門市撫養町大桑島字浜端185',      prefecture:'徳島県',  category:'スイーツ', lat:34.1776, lng:134.6097, score:7900, instagram:5600,  tiktok:1950000 },
-  { id:90, name:'高松 讃岐うどん 山越 本店',            address:'香川県綾歌郡綾川町羽床上602-2',          prefecture:'香川県',  category:'ラーメン', lat:34.2433, lng:133.9476, score:9400, instagram:8700,  tiktok:3500000 },
-  { id:91, name:'丸亀 骨付鳥 一鶴 本店',               address:'香川県丸亀市浜町317',                  prefecture:'香川県',  category:'居酒屋',  lat:34.2894, lng:133.7975, score:8800, instagram:5100,  tiktok:1900000 },
-  { id:92, name:'松山 鯛めし 秋嘉',                  address:'愛媛県松山市大街道3-4-15',              prefecture:'愛媛県',  category:'寿司',    lat:33.8416, lng:132.7657, score:8500, instagram:4800,  tiktok:1750000 },
-  { id:93, name:'道後温泉 湯上がりカフェ 茶玻瑠',        address:'愛媛県松山市道後湯之町6-7',              prefecture:'愛媛県',  category:'カフェ',   lat:33.8523, lng:132.7860, score:8900, instagram:7200,  tiktok:2700000 },
-  { id:94, name:'高知 かつおのたたき 明神丸 ひろめ市場店', address:'高知県高知市帯屋町2-3-1',            prefecture:'高知県',  category:'寿司',    lat:33.5597, lng:133.5311, score:9200, instagram:7800,  tiktok:3100000 },
-  { id:95, name:'高知 日曜市 芋けんぴ',                address:'高知県高知市追手筋',                   prefecture:'高知県',  category:'スイーツ', lat:33.5593, lng:133.5316, score:8100, instagram:5400,  tiktok:1900000 },
-  { id:96, name:'呼子 イカの活造り 河太郎 呼子店',       address:'佐賀県唐津市呼子町呼子1744',            prefecture:'佐賀県',  category:'寿司',    lat:33.5070, lng:129.8338, score:9400, instagram:8200,  tiktok:3300000 },
-  { id:97, name:'嬉野温泉 湯豆腐料理 大村屋',           address:'佐賀県嬉野市嬉野町大字下宿乙2190-1',    prefecture:'佐賀県',  category:'洋食',    lat:33.1123, lng:129.9869, score:8200, instagram:4700,  tiktok:1650000 },
-  { id:98, name:'長崎 トルコライス ツル茶ん',            address:'長崎県長崎市油屋町2-47',               prefecture:'長崎県',  category:'洋食',    lat:32.7448, lng:129.8737, score:8700, instagram:5300,  tiktok:2000000 },
-  { id:99, name:'長崎新地 ちゃんぽん 江山楼 本店',        address:'長崎県長崎市新地町13-13',              prefecture:'長崎県',  category:'中華',    lat:32.7395, lng:129.8686, score:9100, instagram:6100,  tiktok:2400000 },
-  { id:100, name:'熊本 馬刺し 馬肉専門店 隆熊',          address:'熊本県熊本市中央区下通1-3-1',           prefecture:'熊本県',  category:'居酒屋',  lat:32.7898, lng:130.7417, score:8900, instagram:5800,  tiktok:2200000 },
-  { id:101, name:'熊本 太平燕 紅蘭亭 本店',             address:'熊本県熊本市中央区下通1-2-10',          prefecture:'熊本県',  category:'中華',    lat:32.7893, lng:130.7410, score:8400, instagram:4200,  tiktok:1550000 },
-  { id:102, name:'別府 地獄蒸し工房 鉄輪',             address:'大分県別府市井田364-1',                prefecture:'大分県',  category:'洋食',    lat:33.2900, lng:131.5015, score:9000, instagram:8100,  tiktok:3300000 },
-  { id:103, name:'大分 とり天 東洋軒 本店',             address:'大分県大分市中央町3-2-6',               prefecture:'大分県',  category:'居酒屋',  lat:33.2382, lng:131.6126, score:8300, instagram:4600,  tiktok:1700000 },
-  { id:104, name:'宮崎 チキン南蛮 おぐら 本店',          address:'宮崎県宮崎市橘通西3-4-34',              prefecture:'宮崎県',  category:'洋食',    lat:31.9111, lng:131.4239, score:9100, instagram:6500,  tiktok:2600000 },
-  { id:105, name:'日向 地鶏の炭火焼き 山形屋',           address:'宮崎県宮崎市橘通東4-7-1',               prefecture:'宮崎県',  category:'居酒屋',  lat:31.9150, lng:131.4271, score:8500, instagram:4900,  tiktok:1800000 },
-  { id:106, name:'鹿児島 黒豚しゃぶしゃぶ 和気 天文館店',  address:'鹿児島県鹿児島市千日町12-20',           prefecture:'鹿児島県', category:'焼肉',   lat:31.5902, lng:130.5506, score:8900, instagram:5700,  tiktok:2100000 },
-  { id:107, name:'指宿 砂むし温泉カフェ 砂楽',            address:'鹿児島県指宿市湯の浜5-25-18',           prefecture:'鹿児島県', category:'カフェ',  lat:31.2523, lng:130.6353, score:8600, instagram:7400,  tiktok:2900000 },
+  '新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県',
+  '静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県',
+  '奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県',
+  '徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県',
+  '熊本県','大分県','宮崎県','鹿児島県','沖縄県'
 ];
 
-/* ====== STATE ====== */
-let map, markers = [];
-let selectedCategory = 'すべて', selectedPrefecture = 'all';
-let currentTab = 'map', currentPanelStore = null;
-let favorites = new Set(JSON.parse(localStorage.getItem('buzuri_favorites') || '[]'));
-let carouselIndex = 0, carouselPhotos = [];
-let touchStartX = 0;
-
-/* ====== UTILS ====== */
-function getCategoryColor(n) { return (CATEGORIES.find(c=>c.name===n)||{}).color||'#888'; }
-function formatNum(n) {
-  if (n>=10000) return (n/10000).toFixed(1)+'万';
-  if (n>=1000)  return (n/1000).toFixed(1)+'K';
-  return String(n);
-}
-function saveFavorites() { localStorage.setItem('buzuri_favorites', JSON.stringify([...favorites])); }
-function isFav(id) { return favorites.has(id); }
-
-/* ====== MAP INIT ====== */
-function initMap() {
-  document.getElementById('loading').style.display = 'none';
-  map = new google.maps.Map(document.getElementById('map'), {
-    center:{lat:35.6762,lng:139.6503}, zoom:11,
-    mapTypeControl:false, streetViewControl:false, fullscreenControl:false,
-    zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_CENTER},
-    styles:[
-      {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
-      {featureType:'transit',stylers:[{visibility:'simplified'}]},
-    ]
-  });
-  map.addListener('click', closePanel);
-  buildCategoryChips(); renderMarkers(); updateFavTab();
-}
-
-/* ====== TABS ====== */
-function switchTab(tab) {
-  currentTab = tab; closePanel();
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  document.getElementById('map').style.display          = tab==='map'       ?'block':'none';
-  document.getElementById('count-badge').style.display  = tab==='map'       ?'block':'none';
-  document.getElementById('ranking-panel').classList.toggle('active',  tab==='ranking');
-  document.getElementById('favorites-panel').classList.toggle('active', tab==='favorites');
-  document.getElementById('filters').style.display      = tab==='favorites' ?'none':'block';
-  if (tab==='ranking')   renderRanking();
-  if (tab==='favorites') renderFavorites();
-}
-
-/* ====== CHIPS ====== */
-function buildCategoryChips() {
-  const row = document.getElementById('category-row'); row.innerHTML='';
-  CATEGORIES.forEach(cat=>{
-    const active=cat.name===selectedCategory;
-    const chip=document.createElement('div');
-    chip.className='cat-chip'+(active?' active':'');
-    chip.textContent=cat.name;
-    chip.style.borderColor=cat.color;
-    chip.style.color=active?'white':cat.color;
-    chip.style.background=active?cat.color:'white';
-    chip.onclick=()=>{
-      selectedCategory=cat.name; buildCategoryChips();
-      if(currentTab==='map')     renderMarkers();
-      if(currentTab==='ranking') renderRanking();
-    };
-    row.appendChild(chip);
-  });
-}
-
-/* ====== PREFECTURE ====== */
-const PREF_CENTERS={
-  '北海道':{lat:43.0642,lng:141.3469,zoom:10},'青森県':{lat:40.8244,lng:140.7400,zoom:11},
-  '岩手県':{lat:39.7036,lng:141.1527,zoom:11},'宮城県':{lat:38.2688,lng:140.8721,zoom:11},
-  '秋田県':{lat:39.7186,lng:140.1023,zoom:11},'山形県':{lat:38.2404,lng:140.3634,zoom:11},
-  '福島県':{lat:37.7500,lng:140.4676,zoom:11},'茨城県':{lat:36.3418,lng:140.4468,zoom:11},
-  '栃木県':{lat:36.5657,lng:139.8836,zoom:11},'群馬県':{lat:36.3912,lng:139.0608,zoom:11},
-  '埼玉県':{lat:35.8570,lng:139.6489,zoom:11},'千葉県':{lat:35.6050,lng:140.1233,zoom:11},
-  '東京都':{lat:35.6762,lng:139.6503,zoom:11},'神奈川県':{lat:35.4478,lng:139.6425,zoom:11},
-  '新潟県':{lat:37.9026,lng:139.0232,zoom:11},'富山県':{lat:36.6953,lng:137.2113,zoom:11},
-  '石川県':{lat:36.5944,lng:136.6256,zoom:11},'福井県':{lat:36.0652,lng:136.2217,zoom:11},
-  '山梨県':{lat:35.6635,lng:138.5685,zoom:11},'長野県':{lat:36.6513,lng:138.1810,zoom:11},
-  '岐阜県':{lat:35.3912,lng:136.7223,zoom:11},'静岡県':{lat:34.9756,lng:138.3828,zoom:11},
-  '愛知県':{lat:35.1802,lng:136.9066,zoom:11},'三重県':{lat:34.7303,lng:136.5086,zoom:11},
-  '滋賀県':{lat:35.0045,lng:135.8686,zoom:11},'京都府':{lat:35.0116,lng:135.7681,zoom:11},
-  '大阪府':{lat:34.6937,lng:135.5023,zoom:11},'兵庫県':{lat:34.6913,lng:135.1830,zoom:11},
-  '奈良県':{lat:34.6851,lng:135.8327,zoom:11},'和歌山県':{lat:34.2260,lng:135.1675,zoom:11},
-  '鳥取県':{lat:35.5036,lng:134.2381,zoom:11},'島根県':{lat:35.4723,lng:133.0505,zoom:11},
-  '岡山県':{lat:34.6618,lng:133.9344,zoom:11},'広島県':{lat:34.3963,lng:132.4596,zoom:11},
-  '山口県':{lat:34.1861,lng:131.4706,zoom:11},'徳島県':{lat:34.0658,lng:134.5594,zoom:11},
-  '香川県':{lat:34.3401,lng:134.0434,zoom:11},'愛媛県':{lat:33.8416,lng:132.7657,zoom:11},
-  '高知県':{lat:33.5597,lng:133.5311,zoom:11},'福岡県':{lat:33.5902,lng:130.4017,zoom:12},
-  '佐賀県':{lat:33.2494,lng:130.2988,zoom:11},'長崎県':{lat:32.7448,lng:129.8737,zoom:11},
-  '熊本県':{lat:32.7898,lng:130.7417,zoom:11},'大分県':{lat:33.2382,lng:131.6126,zoom:11},
-  '宮崎県':{lat:31.9111,lng:131.4239,zoom:11},'鹿児島県':{lat:31.5602,lng:130.5581,zoom:11},
-  '沖縄県':{lat:26.2124,lng:127.6809,zoom:11},
+const CATEGORY_PHOTO_SETS = {
+  'カフェ': [
+    { url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&h=800&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&h=800&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=800&h=800&fit=crop&auto=format', label: '内観' },
+  ],
+  'ラーメン': [
+    { url: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=800&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&h=800&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=800&h=800&fit=crop&auto=format', label: '内観' },
+  ],
+  '寿司': [
+    { url: 'https://images.unsplash.com/photo-1583623025817-d180a2221d0a?w=800&h=800&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=800&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800&h=800&fit=crop&auto=format', label: '内観' },
+  ],
+  '焼肉': [
+    { url: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=800&h=800&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=800&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=800&fit=crop&auto=format', label: '内観' },
+  ],
+  'イタリアン': [
+    { url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=800&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=800&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=800&fit=crop&auto=format', label: '内観' },
+  ],
+  '居酒屋': [
+    { url: 'https://images.unsplash.com/photo-1498654077810-12c21d4d6dc3?w=800&h=800&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1540648639573-8c848de23f0a?w=800&h=800&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1514190051997-0f6f39ca5cde?w=800&h=800&fit=crop&auto=format', label: '内観' },
+  ],
+  'スイーツ': [
+    { url: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800&h=800&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=800&h=800&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=800&h=800&fit=crop&auto=format', label: '内観' },
+  ],
+  '和食': [
+    { url: 'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=800&h=800&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=800&h=800&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&h=800&fit=crop&auto=format', label: '内観' },
+  ],
 };
-function onPrefectureChange() {
-  selectedPrefecture=document.getElementById('prefecture-select').value;
-  if (selectedPrefecture!=='all') {
-    const c=PREF_CENTERS[selectedPrefecture];
-    if(c&&map){map.setCenter({lat:c.lat,lng:c.lng});map.setZoom(c.zoom);}
-  } else { if(map){map.setCenter({lat:36.5,lng:136.0});map.setZoom(5);} }
-  if(currentTab==='map')     renderMarkers();
-  if(currentTab==='ranking') renderRanking();
+const DEFAULT_PHOTOS = CATEGORY_PHOTO_SETS['カフェ'];
+
+const STORES = [
+  { id:1, name:'渋谷スカイカフェ', category:'カフェ', prefecture:'東京都', lat:35.6595, lng:139.7004, score:98, ig:45200, google:4.8, tiktok:128000, address:'渋谷区道玄坂2-1-1', tags:['#フォトジェニック','#テラス席','#スイーツ'] },
+  { id:2, name:'新宿黄金ラーメン', category:'ラーメン', prefecture:'東京都', lat:35.6896, lng:139.6917, score:94, ig:28300, google:4.7, tiktok:89000, address:'新宿区歌舞伎町1-2-3', tags:['#濃厚豚骨','#深夜営業','#行列必至'] },
+  { id:3, name:'銀座鮨 一穂', category:'寿司', prefecture:'東京都', lat:35.6717, lng:139.7649, score:97, ig:31000, google:4.9, tiktok:62000, address:'中央区銀座6-7-8', tags:['#オマカセ','#高級寿司','#予約困難'] },
+  { id:4, name:'原宿クレープ天国', category:'スイーツ', prefecture:'東京都', lat:35.6696, lng:139.7025, score:88, ig:52000, google:4.5, tiktok:195000, address:'渋谷区神宮前1-5-3', tags:['#映えスイーツ','#行列','#インスタ映え'] },
+  { id:5, name:'池袋焼肉大将', category:'焼肉', prefecture:'東京都', lat:35.7295, lng:139.7109, score:85, ig:19400, google:4.6, tiktok:43000, address:'豊島区南池袋2-8-1', tags:['#厚切り肉','#コスパ最高','#隠れ家'] },
+  { id:6, name:'道頓堀たこ焼き本舗', category:'居酒屋', prefecture:'大阪府', lat:34.6686, lng:135.5020, score:92, ig:38100, google:4.6, tiktok:142000, address:'大阪市中央区道頓堀1-7-9', tags:['#たこ焼き','#大阪グルメ','#観光'] },
+  { id:7, name:'難波黒門市場寿司', category:'寿司', prefecture:'大阪府', lat:34.6641, lng:135.5058, score:89, ig:24500, google:4.7, tiktok:71000, address:'大阪市中央区難波3-1-2', tags:['#新鮮','#市場','#朝ごはん'] },
+  { id:8, name:'梅田イタリアン LUNA', category:'イタリアン', prefecture:'大阪府', lat:34.7024, lng:135.4960, score:91, ig:33200, google:4.8, tiktok:88000, address:'大阪市北区梅田1-3-4', tags:['#デート','#夜景','#パスタ'] },
+  { id:9, name:'祇園茶寮', category:'カフェ', prefecture:'京都府', lat:35.0038, lng:135.7747, score:96, ig:47800, google:4.9, tiktok:203000, address:'京都市東山区祇園町南側4-1', tags:['#抹茶','#京都カフェ','#和モダン'] },
+  { id:10, name:'嵐山湯豆腐 松籟庵', category:'和食', prefecture:'京都府', lat:35.0116, lng:135.6779, score:93, ig:29700, google:4.8, tiktok:95000, address:'京都市右京区嵯峨天龍寺芒ノ馬場町1', tags:['#湯豆腐','#嵐山','#風情'] },
+  { id:11, name:'横浜中華街 龍皇', category:'イタリアン', prefecture:'神奈川県', lat:35.4437, lng:139.6380, score:87, ig:21300, google:4.5, tiktok:56000, address:'横浜市中区山下町142', tags:['#中華','#食べ放題','#横浜'] },
+  { id:12, name:'鎌倉しらす丼 浜善', category:'和食', prefecture:'神奈川県', lat:35.3193, lng:139.5468, score:90, ig:35600, google:4.7, tiktok:112000, address:'鎌倉市由比ガ浜1-1-1', tags:['#しらす','#海鮮','#鎌倉グルメ'] },
+  { id:13, name:'中洲屋台 博多ラーメン', category:'ラーメン', prefecture:'福岡県', lat:33.5894, lng:130.4011, score:95, ig:41200, google:4.8, tiktok:175000, address:'福岡市博多区中洲5-2-1', tags:['#博多ラーメン','#屋台','#豚骨'] },
+  { id:14, name:'天神もつ鍋 おおやま', category:'居酒屋', prefecture:'福岡県', lat:33.5900, lng:130.3990, score:91, ig:26800, google:4.7, tiktok:98000, address:'福岡市中央区天神2-4-1', tags:['#もつ鍋','#福岡グルメ','#鍋'] },
+  { id:15, name:'札幌スープカレー基地', category:'和食', prefecture:'北海道', lat:43.0621, lng:141.3544, score:89, ig:22100, google:4.6, tiktok:67000, address:'札幌市中央区南3条西3丁目', tags:['#スープカレー','#北海道','#スパイス'] },
+  { id:16, name:'函館朝市 海鮮丼 きくよ食堂', category:'和食', prefecture:'北海道', lat:41.7686, lng:140.7289, score:93, ig:34500, google:4.8, tiktok:143000, address:'函館市若松町9-19', tags:['#海鮮丼','#函館','#朝市'] },
+  { id:17, name:'名古屋矢場とん 本店', category:'和食', prefecture:'愛知県', lat:35.1592, lng:136.9065, score:88, ig:28900, google:4.6, tiktok:82000, address:'名古屋市中区大須3-6-18', tags:['#みそかつ','#名古屋飯','#ご当地'] },
+  { id:18, name:'那覇国際通り ソーキそば', category:'ラーメン', prefecture:'沖縄県', lat:26.2167, lng:127.6794, score:86, ig:18700, google:4.5, tiktok:54000, address:'那覇市牧志3-2-1', tags:['#沖縄そば','#ソーキ','#沖縄グルメ'] },
+];
+
+// ===== STATE =====
+let selectedPrefecture = 'all';
+let currentTab = 'map';
+let activeInfoWindow = null;
+let map = null;
+let markers = [];
+let favorites = new Set(JSON.parse(localStorage.getItem('buzuri_favs') || '[]'));
+let currentStore = null;
+let carouselPhotos = [];
+let carouselIndex = 0;
+let touchStartX = 0;
+let touchStartY = 0;
+
+// ===== MAP =====
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: 35.6762, lng: 139.6503 },
+    zoom: 11,
+    styles: [
+      { elementType:'geometry', stylers:[{color:'#1a1a1a'}] },
+      { elementType:'labels.text.fill', stylers:[{color:'#757575'}] },
+      { elementType:'labels.text.stroke', stylers:[{color:'#212121'}] },
+      { featureType:'road', elementType:'geometry', stylers:[{color:'#2c2c2c'}] },
+      { featureType:'road.arterial', elementType:'labels.text.fill', stylers:[{color:'#757575'}] },
+      { featureType:'road.highway', elementType:'geometry', stylers:[{color:'#3c3c3c'}] },
+      { featureType:'water', elementType:'geometry', stylers:[{color:'#000000'}] },
+      { featureType:'water', elementType:'labels.text.fill', stylers:[{color:'#3d3d3d'}] },
+      { featureType:'poi', stylers:[{visibility:'off'}] },
+      { featureType:'transit', stylers:[{visibility:'off'}] },
+    ],
+    disableDefaultUI: true,
+    gestureHandling: 'greedy',
+  });
+  renderMarkers();
+  updateFavDot();
 }
 
-/* ====== MARKERS ====== */
 function renderMarkers() {
-  markers.forEach(m=>m.setMap(null)); markers=[];
-  const filtered=getFiltered();
-  document.getElementById('count-num').textContent=filtered.length;
-  filtered.forEach(store=>{
-    const color=getCategoryColor(store.category);
-    const marker=new google.maps.Marker({
-      position:{lat:store.lat,lng:store.lng},map,title:store.name,
-      icon:{
-        path:'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-        fillColor:color,fillOpacity:1,strokeColor:'white',strokeWeight:1.5,
-        scale:1.9,anchor:new google.maps.Point(12,22),
-      },
-      animation:google.maps.Animation.DROP,
+  markers.forEach(m => m.setMap(null));
+  markers = [];
+  if (activeInfoWindow) { activeInfoWindow.close(); activeInfoWindow = null; }
+
+  getFiltered().forEach(store => {
+    const size = store.score >= 95 ? 44 : store.score >= 85 ? 38 : 32;
+    const bg = store.score >= 95 ? '#ff6b6b' : store.score >= 85 ? '#ffd93d' : '#4ecdc4';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 44 44">
+      <circle cx="22" cy="22" r="20" fill="${bg}" stroke="#fff" stroke-width="3"/>
+      <text x="22" y="27" text-anchor="middle" font-size="13" font-weight="900" fill="#000" font-family="Arial">${store.score}</text>
+    </svg>`;
+    const marker = new google.maps.Marker({
+      position: { lat: store.lat, lng: store.lng },
+      map,
+      icon: { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg), scaledSize: new google.maps.Size(size, size), anchor: new google.maps.Point(size/2, size/2) },
+      zIndex: store.score,
     });
-    marker.addListener('click',(e)=>{e.stop();openPanel(store);});
+    const iw = new google.maps.InfoWindow({
+      content: `<div class="map-popup" onclick="openStore(${store.id})">
+        <div class="map-popup-name">${store.name}</div>
+        <div class="map-popup-meta">${store.category} · ${store.prefecture}</div>
+        <div class="map-popup-score">${store.score}</div>
+      </div>`,
+      pixelOffset: new google.maps.Size(0, -size/2 - 4),
+    });
+    marker.addListener('click', () => {
+      if (activeInfoWindow) activeInfoWindow.close();
+      iw.open(map, marker);
+      activeInfoWindow = iw;
+    });
     markers.push(marker);
   });
 }
+
 function getFiltered() {
-  return STORES
-    .filter(s=>(selectedPrefecture==='all'||s.prefecture===selectedPrefecture)&&(selectedCategory==='すべて'||s.category===selectedCategory))
-    .sort((a,b)=>b.score-a.score);
+  return selectedPrefecture === 'all' ? STORES : STORES.filter(s => s.prefecture === selectedPrefecture);
 }
 
-/* ====== RANKING ====== */
+function selectPref(pref) {
+  selectedPrefecture = pref;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.pref === pref));
+  if (currentTab === 'map') {
+    renderMarkers();
+    if (pref !== 'all') {
+      const stores = getFiltered();
+      if (stores.length) {
+        const bounds = new google.maps.LatLngBounds();
+        stores.forEach(s => bounds.extend({ lat: s.lat, lng: s.lng }));
+        map.fitBounds(bounds, { top: 80, bottom: 80, left: 40, right: 40 });
+      }
+    } else {
+      map.setCenter({ lat: 36.2048, lng: 138.2529 }); map.setZoom(6);
+    }
+  } else if (currentTab === 'ranking') {
+    renderRanking();
+  }
+}
+
+// ===== TABS =====
+function switchTab(tab) {
+  currentTab = tab;
+  ['map','ranking','favorites'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+  });
+  document.getElementById('map-view').style.display = tab === 'map' ? 'flex' : 'none';
+  document.getElementById('ranking-view').style.display = tab === 'ranking' ? 'flex' : 'none';
+  document.getElementById('favorites-view').style.display = tab === 'favorites' ? 'flex' : 'none';
+  document.getElementById('filter-bar').style.display = tab === 'favorites' ? 'none' : 'flex';
+  if (tab === 'ranking') renderRanking();
+  if (tab === 'favorites') renderFavorites();
+}
+
+// ===== RANKING =====
 function renderRanking() {
-  const container=document.getElementById('ranking-list'); container.innerHTML='';
-  const catLabel=selectedCategory==='すべて'?'全カテゴリ':selectedCategory;
-  if (selectedPrefecture!=='all') {
-    const list=getFiltered();
-    document.getElementById('ranking-desc').textContent=`${selectedPrefecture} · ${catLabel} · ${list.length}件`;
-    if(!list.length){container.innerHTML=emptyState();return;}
-    list.forEach((s,i)=>container.appendChild(makeStoreItem(s,i+1,false)));
+  const container = document.getElementById('ranking-body');
+  container.innerHTML = '';
+  const title = document.getElementById('ranking-title');
+  const countEl = document.getElementById('ranking-count');
+
+  if (selectedPrefecture !== 'all') {
+    const list = getFiltered().sort((a,b) => b.score - a.score);
+    title.textContent = `🏆 ${selectedPrefecture}ランキング`;
+    countEl.textContent = ` ${list.length}件`;
+    list.forEach((s,i) => container.appendChild(makeStoreItem(s, i+1, false)));
     return;
   }
-  document.getElementById('ranking-desc').textContent=`全国 · ${catLabel} · 都道府県別`;
-  let total=0;
-  PREF_ORDER.forEach(pref=>{
-    const ps=STORES.filter(s=>s.prefecture===pref&&(selectedCategory==='すべて'||s.category===selectedCategory)).sort((a,b)=>b.score-a.score);
-    if(!ps.length) return;
-    total+=ps.length;
-    const h=document.createElement('div'); h.className='pref-section-header'; h.textContent=pref;
+
+  title.textContent = '🏆 全国ランキング';
+  let total = 0;
+  PREF_ORDER.forEach(pref => {
+    const ps = STORES.filter(s => s.prefecture === pref).sort((a,b) => b.score - a.score);
+    if (!ps.length) return;
+    total += ps.length;
+    const h = document.createElement('div');
+    h.className = 'pref-section-header';
+    h.textContent = pref;
     container.appendChild(h);
-    ps.forEach((s,i)=>container.appendChild(makeStoreItem(s,i+1,true)));
+    ps.forEach((s,i) => container.appendChild(makeStoreItem(s, i+1, true)));
   });
-  if(!total) container.innerHTML=emptyState();
+  countEl.textContent = ` ${total}件`;
 }
-function makeStoreItem(store,rank,inSection) {
-  const color=getCategoryColor(store.category),favd=isFav(store.id);
-  const item=document.createElement('div'); item.className='store-list-item';
-  item.innerHTML=`
-    <div class="rank-num ${rank===1?'top1':rank===2?'top2':rank===3?'top3':''}">${rank}</div>
-    <div class="list-item-icon" style="background:${color}22">${CATEGORY_EMOJI[store.category]||'🍽️'}</div>
-    <div class="list-item-info">
-      <div class="list-item-name">${store.name}</div>
-      ${inSection?'':` <div class="list-item-meta">📍 ${store.prefecture}</div>`}
-      <span class="list-item-badge" style="background:${color}">${store.category}</span>
-    </div>
-    <div class="list-item-score">
-      <div class="list-item-score-val">${store.score.toLocaleString()}</div>
-      <div class="list-item-score-unit">pt</div>
-    </div>
-    <button class="list-item-fav" data-id="${store.id}" onclick="toggleFavFromList(event,${store.id})">${favd?'❤️':'🤍'}</button>`;
-  item.addEventListener('click',()=>openPanel(store));
-  return item;
-}
-function emptyState(){return`<div class="empty-state"><div class="emoji">🔍</div><p>該当するお店がありません</p><small>フィルターを変更してください</small></div>`;}
 
-/* ====== FAVORITES ====== */
+function makeStoreItem(store, rank, showPref) {
+  const div = document.createElement('div');
+  div.className = 'store-item';
+  const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+  const thumbPhotos = CATEGORY_PHOTO_SETS[store.category] || DEFAULT_PHOTOS;
+  const isFav = favorites.has(store.id);
+  div.innerHTML = `
+    <div class="rank-badge ${rankClass}">${rank}</div>
+    <img class="store-thumb" src="${thumbPhotos[0].url}" alt="${store.name}" loading="lazy">
+    <div class="store-info">
+      <div class="store-name">${store.name}</div>
+      <div class="store-meta">${store.category} · ${store.address}</div>
+    </div>
+    <div class="store-score">
+      <div class="score-value">${store.score}</div>
+      <div class="score-label">スコア</div>
+    </div>
+    <button class="fav-btn-list ${isFav ? 'active' : ''}" onclick="toggleFav(event, ${store.id})">${isFav ? '❤️' : '🤍'}</button>
+  `;
+  div.querySelector('.store-info').addEventListener('click', () => openStore(store.id));
+  div.querySelector('.rank-badge').addEventListener('click', () => openStore(store.id));
+  div.querySelector('.store-thumb').addEventListener('click', () => openStore(store.id));
+  return div;
+}
+
+// ===== FAVORITES =====
 function renderFavorites() {
-  const favStores=STORES.filter(s=>isFav(s.id)).sort((a,b)=>b.score-a.score);
-  const container=document.getElementById('favorites-list'); container.innerHTML='';
-  if(!favStores.length){
-    container.innerHTML=`<div class="empty-state"><div class="emoji">🤍</div><p>お気に入りがまだありません</p><small>マップやランキングでハートを押してみよう</small></div>`;
+  const container = document.getElementById('favorites-body');
+  container.innerHTML = '';
+  const favStores = STORES.filter(s => favorites.has(s.id)).sort((a,b) => b.score - a.score);
+  if (!favStores.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🤍</div><p>まだお気に入りがありません</p></div>`;
     return;
   }
-  favStores.forEach(store=>{
-    const color=getCategoryColor(store.category);
-    const item=document.createElement('div'); item.className='store-list-item';
-    item.innerHTML=`
-      <div class="list-item-icon" style="background:${color}22">${CATEGORY_EMOJI[store.category]||'🍽️'}</div>
-      <div class="list-item-info">
-        <div class="list-item-name">${store.name}</div>
-        <div class="list-item-meta">📍 ${store.prefecture}</div>
-        <span class="list-item-badge" style="background:${color}">${store.category}</span>
-      </div>
-      <div class="list-item-score">
-        <div class="list-item-score-val">${store.score.toLocaleString()}</div>
-        <div class="list-item-score-unit">pt</div>
-      </div>
-      <button class="list-item-fav" data-id="${store.id}" onclick="toggleFavFromList(event,${store.id})">❤️</button>`;
-    item.addEventListener('click',()=>openPanel(store));
-    container.appendChild(item);
-  });
-}
-function updateFavTab(){ document.getElementById('tab-favorites').classList.toggle('has-fav',favorites.size>0); }
-function toggleFav(id){ if(favorites.has(id))favorites.delete(id);else favorites.add(id); saveFavorites();updateFavTab(); }
-function toggleFavFromList(e,id){
-  e.stopPropagation(); toggleFav(id);
-  const btn=e.currentTarget; btn.textContent=isFav(id)?'❤️':'🤍';
-  btn.classList.add('heart-pop'); btn.addEventListener('animationend',()=>btn.classList.remove('heart-pop'),{once:true});
-  if(currentPanelStore&&currentPanelStore.id===id) updatePanelFavBtn();
-  if(currentTab==='favorites') renderFavorites();
-}
-function toggleFavFromPanel(){
-  if(!currentPanelStore) return;
-  toggleFav(currentPanelStore.id); updatePanelFavBtn();
-  document.querySelectorAll(`.list-item-fav[data-id="${currentPanelStore.id}"]`).forEach(btn=>{ btn.textContent=isFav(currentPanelStore.id)?'❤️':'🤍'; });
-  if(currentTab==='favorites') renderFavorites();
-}
-function updatePanelFavBtn(){
-  if(!currentPanelStore) return;
-  const btn=document.getElementById('panel-fav-btn');
-  btn.textContent=isFav(currentPanelStore.id)?'❤️':'🤍';
-  btn.classList.add('heart-pop'); btn.addEventListener('animationend',()=>btn.classList.remove('heart-pop'),{once:true});
+  favStores.forEach((s,i) => container.appendChild(makeStoreItem(s, i+1, true)));
 }
 
-/* ══════════════════════════════
-   CAROUSEL  ─  flex: 0 0 100% 方式
-   スライドはコンテナ幅100%を維持。
-   translateX は -index*100% で移動。
-══════════════════════════════ */
+function toggleFav(e, id) {
+  e.stopPropagation();
+  const btn = e.currentTarget;
+  if (favorites.has(id)) {
+    favorites.delete(id);
+    btn.textContent = '🤍'; btn.classList.remove('active');
+  } else {
+    favorites.add(id);
+    btn.textContent = '❤️'; btn.classList.add('active');
+    btn.classList.add('heart-pop');
+    setTimeout(() => btn.classList.remove('heart-pop'), 300);
+  }
+  saveFavs();
+}
+
+function saveFavs() {
+  localStorage.setItem('buzuri_favs', JSON.stringify([...favorites]));
+  updateFavDot();
+}
+
+function updateFavDot() {
+  document.getElementById('fav-dot').classList.toggle('show', favorites.size > 0);
+}
+
+// ===== MODAL =====
+function openStore(id) {
+  const store = STORES.find(s => s.id === id);
+  if (!store) return;
+  currentStore = store;
+  document.getElementById('modal-name').textContent = store.name;
+  document.getElementById('modal-category').textContent = `📍 ${store.category} · ${store.prefecture}`;
+  document.getElementById('modal-address').textContent = store.address;
+  document.getElementById('modal-score-big').textContent = store.score;
+  const barsEl = document.getElementById('modal-score-bars');
+  barsEl.innerHTML = [
+    { label: 'Instagram', val: Math.round(store.ig / 600), raw: store.ig.toLocaleString() },
+    { label: 'Google', val: Math.round(store.google * 20), raw: store.google },
+    { label: 'TikTok', val: Math.round(store.tiktok / 2500), raw: (store.tiktok/1000).toFixed(0)+'K' },
+  ].map(b => `
+    <div class="score-bar-row">
+      <span class="score-bar-label">${b.label}</span>
+      <div class="score-bar-bg"><div class="score-bar-fill" style="width:${Math.min(b.val,100)}%"></div></div>
+      <span style="font-size:10px;color:#888;width:36px;text-align:right">${b.raw}</span>
+    </div>
+  `).join('');
+  document.getElementById('modal-tags').innerHTML = (store.tags||[]).map(t=>`<span class="modal-tag">${t}</span>`).join('');
+  updateModalFavBtn();
+  buildCarousel(store.category);
+  document.getElementById('store-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function updateModalFavBtn() {
+  const btn = document.getElementById('modal-fav-btn');
+  const isFav = favorites.has(currentStore?.id);
+  btn.textContent = isFav ? '❤️ お気に入りに登録済み' : '❤️ お気に入りに追加';
+  btn.classList.toggle('saved', isFav);
+}
+
+function toggleFavFromModal() {
+  if (!currentStore) return;
+  if (favorites.has(currentStore.id)) { favorites.delete(currentStore.id); } else { favorites.add(currentStore.id); }
+  saveFavs();
+  updateModalFavBtn();
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('store-modal')) {
+    document.getElementById('store-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+// ===== CAROUSEL =====
 function buildCarousel(category) {
   carouselPhotos = CATEGORY_PHOTO_SETS[category] || DEFAULT_PHOTOS;
-  carouselIndex  = 0;
-
+  carouselIndex = 0;
   const track = document.getElementById('photo-carousel-track');
   track.innerHTML = '';
-  // track の width は CSS で 100% のまま。flex で各スライドを並べる。
   track.style.transform = 'translateX(0)';
-
-  carouselPhotos.forEach((p, i) => {
+  carouselPhotos.forEach(p => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
-    slide.innerHTML = `
-      <img src="${p.url}" alt="${p.label}" loading="${i===0?'eager':'lazy'}">
-      <div class="photo-type-label">${p.label}</div>`;
+    slide.innerHTML = `<img src="${p.url}" alt="${p.label}" loading="lazy"><div class="photo-type-label">${p.label}</div>`;
     track.appendChild(slide);
   });
-
-  // ドット
-  const dots = document.getElementById('photo-dots');
-  dots.innerHTML = '';
+  const dotsEl = document.getElementById('carousel-dots');
+  dotsEl.innerHTML = '';
   carouselPhotos.forEach((_, i) => {
     const dot = document.createElement('div');
-    dot.className = 'photo-dot' + (i===0?' active':'');
+    dot.className = 'photo-dot' + (i === 0 ? ' active' : '');
     dot.onclick = () => goToSlide(i);
-    dots.appendChild(dot);
+    dotsEl.appendChild(dot);
   });
-
   updateArrows();
-
-  // タッチスワイプ
-  const wrap = document.getElementById('photo-carousel-wrap');
-  wrap.ontouchstart = e => { touchStartX = e.touches[0].clientX; };
-  wrap.ontouchmove  = e => { if(Math.abs(e.touches[0].clientX - touchStartX) > 8) e.preventDefault(); };
-  wrap.ontouchend   = e => {
-    const dx = touchStartX - e.changedTouches[0].clientX;
-    if (dx >  40) carouselNext();
-    if (dx < -40) carouselPrev();
-  };
+  setupCarouselTouch();
 }
 
 function goToSlide(idx) {
   carouselIndex = Math.max(0, Math.min(idx, carouselPhotos.length - 1));
-  // 各スライドが 100% 幅なので index*100% だけ左にずらす
   document.getElementById('photo-carousel-track').style.transform = `translateX(-${carouselIndex * 100}%)`;
-  document.querySelectorAll('.photo-dot').forEach((d,i) => d.classList.toggle('active', i===carouselIndex));
+  document.querySelectorAll('.photo-dot').forEach((d, i) => d.classList.toggle('active', i === carouselIndex));
   updateArrows();
 }
-function carouselPrev() { goToSlide(carouselIndex - 1); }
-function carouselNext() { goToSlide(carouselIndex + 1); }
+
 function updateArrows() {
-  document.getElementById('arrow-prev').style.opacity = carouselIndex === 0 ? '0.3' : '1';
-  document.getElementById('arrow-next').style.opacity = carouselIndex === carouselPhotos.length-1 ? '0.3' : '1';
+  document.getElementById('arrow-prev').disabled = carouselIndex === 0;
+  document.getElementById('arrow-next').disabled = carouselIndex === carouselPhotos.length - 1;
 }
 
-/* ====== PANEL ====== */
-function openPanel(store) {
-  currentPanelStore = store;
-  const color = getCategoryColor(store.category);
-  buildCarousel(store.category);
-  document.getElementById('panel-category-badge').textContent      = store.category;
-  document.getElementById('panel-category-badge').style.background = color;
-  document.getElementById('panel-name').textContent                = store.name;
-  document.getElementById('panel-address-text').textContent        = store.address;
-  document.getElementById('panel-score-value').textContent         = store.score.toLocaleString();
-  document.getElementById('panel-instagram').textContent           = formatNum(store.instagram)+'件';
-  document.getElementById('panel-tiktok').textContent              = formatNum(store.tiktok)+'回';
-  document.getElementById('panel-fav-btn').textContent             = isFav(store.id)?'❤️':'🤍';
-  document.getElementById('store-panel').classList.add('open');
-  if(currentTab==='map') map.panTo({lat:store.lat,lng:store.lng});
-}
-function closePanel() {
-  document.getElementById('store-panel').classList.remove('open');
-  currentPanelStore = null;
+function setupCarouselTouch() {
+  const wrap = document.getElementById('photo-carousel-wrap');
+  wrap.ontouchstart = e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; };
+  wrap.ontouchmove = e => { e.stopPropagation(); };
+  wrap.ontouchend = e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+    if (Math.abs(dx) > 40 && Math.abs(dx) > dy) goToSlide(dx < 0 ? carouselIndex + 1 : carouselIndex - 1);
+  };
 }
 
-/* ====== CURRENT LOCATION ====== */
-function goToCurrentLocation() {
-  if(!navigator.geolocation){alert('このブラウザでは現在地取得ができません');return;}
-  if(currentTab!=='map') switchTab('map');
-  navigator.geolocation.getCurrentPosition(
-    pos=>{
-      const loc={lat:pos.coords.latitude,lng:pos.coords.longitude};
-      map.setCenter(loc);map.setZoom(13);
-      new google.maps.Marker({position:loc,map,icon:{path:google.maps.SymbolPath.CIRCLE,scale:10,fillColor:'#4285F4',fillOpacity:1,strokeColor:'white',strokeWeight:2.5},title:'現在地',zIndex:999});
-    },
-    ()=>alert('現在地の取得に失敗しました。ブラウザの位置情報を許可してください。')
-  );
-}
+window.onload = () => {
+  document.getElementById('map-view').style.display = 'flex';
+  initMap();
+};
 </script>
 
-<script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyrmPV0Hpdcuadcxk5EF2Dp97HrzIfRTQ&callback=initMap&language=ja&region=JP">
-</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmPo7bLbT7IpzHqJBYYGkXLilJZi7Ot9A&callback=initMap&language=ja"></script>
 </body>
 </html>
