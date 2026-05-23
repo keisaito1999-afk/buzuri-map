@@ -23,11 +23,11 @@
       display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 2px 8px rgba(0,0,0,0.18); z-index: 100;
     }
-    #header h1 { font-size: 18px; font-weight: 800; letter-spacing: 0.3px; }
+    #header h1 { font-size: 18px; font-weight: 800; }
     #locate-btn {
       background: rgba(255,255,255,0.22); border: none; color: white;
-      padding: 7px 13px; border-radius: 20px; font-size: 13px; cursor: pointer;
-      display: flex; align-items: center; gap: 5px; font-weight: 600;
+      padding: 7px 13px; border-radius: 20px; font-size: 13px;
+      cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600;
     }
     #locate-btn:active { background: rgba(255,255,255,0.4); }
 
@@ -129,11 +129,11 @@
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       padding: 10px 0 8px; cursor: pointer; border: none; background: none;
-      gap: 3px; transition: opacity 0.15s;
+      gap: 3px;
     }
     .nav-tab:active { opacity: 0.6; }
     .nav-tab-icon { font-size: 22px; line-height: 1; }
-    .nav-tab-label { font-size: 10px; font-weight: 700; color: #bbb; letter-spacing: 0.3px; }
+    .nav-tab-label { font-size: 10px; font-weight: 700; color: #bbb; }
     .nav-tab.active .nav-tab-label { color: #FF6B6B; }
     .nav-tab-dot { width: 6px; height: 6px; background: #FF6B6B; border-radius: 50%; display: none; }
     .nav-tab.has-fav .nav-tab-dot { display: block; }
@@ -147,98 +147,106 @@
     }
     #count-badge span { color: #FF6B6B; font-weight: 700; }
 
-    /* ══════════════════════════════════════
-       ── Store Panel ──
-    ══════════════════════════════════════ */
+    /* ══════════════════════════════
+       Store Panel
+    ══════════════════════════════ */
     #store-panel {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: white; border-radius: 20px 20px 0 0;
       box-shadow: 0 -6px 24px rgba(0,0,0,0.15);
       transform: translateY(100%);
       transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 300; max-height: 80vh; overflow-y: auto;
+      z-index: 300; max-height: 82vh; overflow-y: auto;
       padding-bottom: 32px;
     }
     #store-panel.open { transform: translateY(0); }
 
     /* ── Photo Carousel ── */
     #photo-carousel-wrap {
-      position: relative; height: 220px; overflow: hidden;
-      background: #222; touch-action: pan-y;
+      position: relative;
+      width: 100%;
+      /* 4:3の比率で表示 */
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: #1a1a1a;
       border-radius: 20px 20px 0 0;
+      touch-action: pan-y;
     }
     #photo-carousel-track {
-      display: flex; height: 100%;
+      display: flex;
+      width: 100%;
+      height: 100%;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       will-change: transform;
     }
     .carousel-slide {
-      flex-shrink: 0; width: 100%; height: 100%; position: relative;
+      /* 各スライドはコンテナの幅100%を占める・縮まない */
+      flex: 0 0 100%;
+      height: 100%;
+      position: relative;
     }
     .carousel-slide img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
-    /* 写真ラベル */
     .photo-type-label {
-      position: absolute; bottom: 36px; left: 12px;
+      position: absolute; bottom: 38px; left: 12px;
       background: rgba(0,0,0,0.52); color: white;
       font-size: 11px; font-weight: 700; padding: 3px 10px;
-      border-radius: 20px; letter-spacing: 0.5px; backdrop-filter: blur(4px);
+      border-radius: 20px; backdrop-filter: blur(4px);
     }
-    /* グラデーション */
     #photo-gradient {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
-      background: linear-gradient(transparent, rgba(0,0,0,0.35));
+      position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.4));
       pointer-events: none; z-index: 2;
     }
-    /* ドットインジケーター */
     #photo-dots {
-      position: absolute; bottom: 10px; left: 0; right: 0;
+      position: absolute; bottom: 12px; left: 0; right: 0;
       display: flex; justify-content: center; gap: 5px; z-index: 3;
     }
     .photo-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.45); transition: all 0.2s;
+      background: rgba(255,255,255,0.45); transition: all 0.2s; cursor: pointer;
     }
     .photo-dot.active { background: white; width: 18px; border-radius: 3px; }
-    /* 矢印ボタン */
     .carousel-arrow {
       position: absolute; top: 50%; transform: translateY(-50%);
       width: 32px; height: 32px; border-radius: 50%;
       background: rgba(0,0,0,0.38); border: none; color: white;
-      font-size: 15px; cursor: pointer; z-index: 3;
+      font-size: 18px; cursor: pointer; z-index: 3;
       display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(4px); transition: background 0.15s;
+      backdrop-filter: blur(4px); transition: opacity 0.2s;
     }
     .carousel-arrow:active { background: rgba(0,0,0,0.6); }
     #arrow-prev { left: 10px; }
     #arrow-next { right: 10px; }
 
-    /* ── Panel header buttons ── */
-    #panel-drag-area { padding: 14px 0 8px; display: flex; justify-content: center; }
-    #panel-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; }
+    /* Panel buttons */
     #panel-close {
-      position: absolute; top: 14px; right: 16px;
-      width: 30px; height: 30px; background: rgba(0,0,0,0.4); border-radius: 50%;
+      position: absolute; top: 12px; right: 14px;
+      width: 30px; height: 30px; background: rgba(0,0,0,0.42); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; border: none; font-size: 14px; color: white; font-weight: 700;
       z-index: 4;
     }
     #panel-fav-btn {
-      position: absolute; top: 14px; right: 54px;
-      width: 30px; height: 30px; background: rgba(0,0,0,0.4); border-radius: 50%;
+      position: absolute; top: 12px; right: 52px;
+      width: 30px; height: 30px; background: rgba(0,0,0,0.42); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; border: none; font-size: 16px;
       transition: transform 0.15s; z-index: 4;
     }
     #panel-fav-btn:active { transform: scale(1.2); }
 
-    /* ── Panel body ── */
+    /* Panel body */
+    #panel-drag-area { padding: 14px 0 8px; display: flex; justify-content: center; }
+    #panel-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; }
     #panel-body { padding: 0 20px; }
     #panel-category-badge {
       display: inline-block; padding: 3px 11px; border-radius: 12px;
-      font-size: 11px; font-weight: 800; color: white;
-      margin-bottom: 8px; letter-spacing: 0.5px;
+      font-size: 11px; font-weight: 800; color: white; margin-bottom: 8px;
     }
     #panel-name {
       font-size: 20px; font-weight: 800; color: #1a1a1a;
@@ -262,7 +270,7 @@
     .stat-label { font-size: 10px; color: #aaa; margin-bottom: 4px; font-weight: 600; }
     .stat-value { font-size: 16px; font-weight: 800; color: #444; }
 
-    /* ── Loading ── */
+    /* Loading */
     #loading {
       position: fixed; inset: 0; background: white;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -382,7 +390,6 @@
 
 <!-- 店舗詳細パネル -->
 <div id="store-panel">
-  <!-- フォトカルーセル -->
   <div id="photo-carousel-wrap">
     <div id="photo-carousel-track"></div>
     <div id="photo-gradient"></div>
@@ -392,9 +399,7 @@
     <button id="panel-fav-btn" onclick="toggleFavFromPanel()">🤍</button>
     <button id="panel-close" onclick="closePanel()">✕</button>
   </div>
-
   <div id="panel-drag-area"><div id="panel-handle"></div></div>
-
   <div id="panel-body">
     <div id="panel-category-badge"></div>
     <div id="panel-name"></div>
@@ -422,55 +427,54 @@
 <div id="count-badge"><span id="count-num">0</span> 件表示中</div>
 
 <script>
-/* ====== PHOTO SETS per category ====== */
-// 各カテゴリに「料理・外観・内観」の3枚を用意
+/* ====== PHOTO SETS ====== */
 const CATEGORY_PHOTO_SETS = {
   'カフェ': [
-    { url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&h=500&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&h=500&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=800&h=500&fit=crop&auto=format', label: '内観' },
+    { url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&h=600&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&h=600&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=800&h=600&fit=crop&auto=format', label: '内観' },
   ],
   'ラーメン': [
-    { url: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=800&h=500&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800&h=500&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=800&h=500&fit=crop&auto=format', label: '内観' },
+    { url: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=800&h=600&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800&h=600&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=800&h=600&fit=crop&auto=format', label: '内観' },
   ],
   '居酒屋': [
-    { url: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800&h=500&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=800&h=500&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop&auto=format', label: '内観' },
+    { url: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800&h=600&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=800&h=600&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&auto=format', label: '内観' },
   ],
   '焼肉': [
-    { url: 'https://images.unsplash.com/photo-1544025162-d76538b367e0?w=800&h=500&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=500&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop&auto=format', label: '内観' },
+    { url: 'https://images.unsplash.com/photo-1544025162-d76538b367e0?w=800&h=600&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop&auto=format', label: '内観' },
   ],
   'スイーツ': [
-    { url: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=800&h=500&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800&h=500&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&h=500&fit=crop&auto=format', label: '内観' },
+    { url: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=800&h=600&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800&h=600&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&h=600&fit=crop&auto=format', label: '内観' },
   ],
   '寿司': [
-    { url: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&h=500&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1617196034192-a8e70b9a35af?w=800&h=500&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=500&fit=crop&auto=format', label: '内観' },
+    { url: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&h=600&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1617196034192-a8e70b9a35af?w=800&h=600&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=600&fit=crop&auto=format', label: '内観' },
   ],
   '洋食': [
-    { url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=500&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=500&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=800&h=500&fit=crop&auto=format', label: '内観' },
+    { url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=800&h=600&fit=crop&auto=format', label: '内観' },
   ],
   '中華': [
-    { url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&h=500&fit=crop&auto=format', label: '料理' },
-    { url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=500&fit=crop&auto=format', label: '外観' },
-    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop&auto=format', label: '内観' },
+    { url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&h=600&fit=crop&auto=format', label: '料理' },
+    { url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop&auto=format', label: '外観' },
+    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop&auto=format', label: '内観' },
   ],
 };
 
 const DEFAULT_PHOTOS = [
-  { url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=500&fit=crop&auto=format', label: '料理' },
-  { url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=500&fit=crop&auto=format', label: '外観' },
-  { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=500&fit=crop&auto=format', label: '内観' },
+  { url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=600&fit=crop&auto=format', label: '料理' },
+  { url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop&auto=format', label: '外観' },
+  { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop&auto=format', label: '内観' },
 ];
 
 /* ====== DATA ====== */
@@ -485,12 +489,10 @@ const CATEGORIES = [
   { name: '洋食',   color: '#9575CD' },
   { name: '中華',   color: '#FF8C42' },
 ];
-
 const CATEGORY_EMOJI = {
   'カフェ':'☕','ラーメン':'🍜','居酒屋':'🍺',
   '焼肉':'🥩','スイーツ':'🍰','寿司':'🍣','洋食':'🍽️','中華':'🥟',
 };
-
 const PREF_ORDER = [
   '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',
   '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
@@ -500,7 +502,6 @@ const PREF_ORDER = [
   '徳島県','香川県','愛媛県','高知県',
   '福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県',
 ];
-
 const STORES = [
   { id:1,  name:'渋谷ビーントゥバー',              address:'東京都渋谷区神南1-12-3',               prefecture:'東京都',  category:'カフェ',   lat:35.6615, lng:139.7021, score:9850, instagram:3200,  tiktok:1250000 },
   { id:2,  name:'新宿 煮干し中華そば 麺屋一心',      address:'東京都新宿区歌舞伎町2-8-5',             prefecture:'東京都',  category:'ラーメン', lat:35.6940, lng:139.7034, score:8720, instagram:2800,  tiktok:980000  },
@@ -613,23 +614,17 @@ const STORES = [
 
 /* ====== STATE ====== */
 let map, markers = [];
-let selectedCategory = 'すべて';
-let selectedPrefecture = 'all';
-let currentTab = 'map';
-let currentPanelStore = null;
+let selectedCategory = 'すべて', selectedPrefecture = 'all';
+let currentTab = 'map', currentPanelStore = null;
 let favorites = new Set(JSON.parse(localStorage.getItem('buzuri_favorites') || '[]'));
-
-// カルーセル状態
-let carouselIndex = 0;
-let carouselPhotos = [];
+let carouselIndex = 0, carouselPhotos = [];
 let touchStartX = 0;
-let touchDragging = false;
 
 /* ====== UTILS ====== */
-function getCategoryColor(name) { return (CATEGORIES.find(c => c.name === name) || {}).color || '#888'; }
+function getCategoryColor(n) { return (CATEGORIES.find(c=>c.name===n)||{}).color||'#888'; }
 function formatNum(n) {
-  if (n >= 10000) return (n/10000).toFixed(1)+'万';
-  if (n >= 1000)  return (n/1000).toFixed(1)+'K';
+  if (n>=10000) return (n/10000).toFixed(1)+'万';
+  if (n>=1000)  return (n/1000).toFixed(1)+'K';
   return String(n);
 }
 function saveFavorites() { localStorage.setItem('buzuri_favorites', JSON.stringify([...favorites])); }
@@ -639,57 +634,54 @@ function isFav(id) { return favorites.has(id); }
 function initMap() {
   document.getElementById('loading').style.display = 'none';
   map = new google.maps.Map(document.getElementById('map'), {
-    center: { lat:35.6762, lng:139.6503 }, zoom:11,
+    center:{lat:35.6762,lng:139.6503}, zoom:11,
     mapTypeControl:false, streetViewControl:false, fullscreenControl:false,
-    zoomControlOptions:{ position:google.maps.ControlPosition.RIGHT_CENTER },
+    zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_CENTER},
     styles:[
-      { featureType:'poi',     elementType:'labels', stylers:[{visibility:'off'}] },
-      { featureType:'transit', stylers:[{visibility:'simplified'}] },
+      {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
+      {featureType:'transit',stylers:[{visibility:'simplified'}]},
     ]
   });
   map.addListener('click', closePanel);
-  buildCategoryChips();
-  renderMarkers();
-  updateFavTab();
+  buildCategoryChips(); renderMarkers(); updateFavTab();
 }
 
-/* ====== TAB SWITCHING ====== */
+/* ====== TABS ====== */
 function switchTab(tab) {
   currentTab = tab; closePanel();
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
-  document.getElementById('map').style.display           = tab==='map'       ? 'block':'none';
-  document.getElementById('count-badge').style.display  = tab==='map'       ? 'block':'none';
+  document.getElementById('map').style.display          = tab==='map'       ?'block':'none';
+  document.getElementById('count-badge').style.display  = tab==='map'       ?'block':'none';
   document.getElementById('ranking-panel').classList.toggle('active',  tab==='ranking');
   document.getElementById('favorites-panel').classList.toggle('active', tab==='favorites');
-  document.getElementById('filters').style.display      = tab==='favorites' ? 'none':'block';
+  document.getElementById('filters').style.display      = tab==='favorites' ?'none':'block';
   if (tab==='ranking')   renderRanking();
   if (tab==='favorites') renderFavorites();
 }
 
-/* ====== CATEGORY CHIPS ====== */
+/* ====== CHIPS ====== */
 function buildCategoryChips() {
-  const row = document.getElementById('category-row');
-  row.innerHTML = '';
-  CATEGORIES.forEach(cat => {
-    const active = cat.name === selectedCategory;
-    const chip = document.createElement('div');
-    chip.className = 'cat-chip'+(active?' active':'');
-    chip.textContent = cat.name;
-    chip.style.borderColor = cat.color;
-    chip.style.color       = active ? 'white' : cat.color;
-    chip.style.background  = active ? cat.color : 'white';
-    chip.onclick = () => {
-      selectedCategory = cat.name; buildCategoryChips();
-      if (currentTab==='map')     renderMarkers();
-      if (currentTab==='ranking') renderRanking();
+  const row = document.getElementById('category-row'); row.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    const active=cat.name===selectedCategory;
+    const chip=document.createElement('div');
+    chip.className='cat-chip'+(active?' active':'');
+    chip.textContent=cat.name;
+    chip.style.borderColor=cat.color;
+    chip.style.color=active?'white':cat.color;
+    chip.style.background=active?cat.color:'white';
+    chip.onclick=()=>{
+      selectedCategory=cat.name; buildCategoryChips();
+      if(currentTab==='map')     renderMarkers();
+      if(currentTab==='ranking') renderRanking();
     };
     row.appendChild(chip);
   });
 }
 
 /* ====== PREFECTURE ====== */
-const PREF_CENTERS = {
+const PREF_CENTERS={
   '北海道':{lat:43.0642,lng:141.3469,zoom:10},'青森県':{lat:40.8244,lng:140.7400,zoom:11},
   '岩手県':{lat:39.7036,lng:141.1527,zoom:11},'宮城県':{lat:38.2688,lng:140.8721,zoom:11},
   '秋田県':{lat:39.7186,lng:140.1023,zoom:11},'山形県':{lat:38.2404,lng:140.3634,zoom:11},
@@ -715,30 +707,29 @@ const PREF_CENTERS = {
   '宮崎県':{lat:31.9111,lng:131.4239,zoom:11},'鹿児島県':{lat:31.5602,lng:130.5581,zoom:11},
   '沖縄県':{lat:26.2124,lng:127.6809,zoom:11},
 };
-
 function onPrefectureChange() {
-  selectedPrefecture = document.getElementById('prefecture-select').value;
+  selectedPrefecture=document.getElementById('prefecture-select').value;
   if (selectedPrefecture!=='all') {
-    const c = PREF_CENTERS[selectedPrefecture];
-    if (c && map) { map.setCenter({lat:c.lat,lng:c.lng}); map.setZoom(c.zoom); }
-  } else { if (map) { map.setCenter({lat:36.5,lng:136.0}); map.setZoom(5); } }
-  if (currentTab==='map')     renderMarkers();
-  if (currentTab==='ranking') renderRanking();
+    const c=PREF_CENTERS[selectedPrefecture];
+    if(c&&map){map.setCenter({lat:c.lat,lng:c.lng});map.setZoom(c.zoom);}
+  } else { if(map){map.setCenter({lat:36.5,lng:136.0});map.setZoom(5);} }
+  if(currentTab==='map')     renderMarkers();
+  if(currentTab==='ranking') renderRanking();
 }
 
 /* ====== MARKERS ====== */
 function renderMarkers() {
   markers.forEach(m=>m.setMap(null)); markers=[];
-  const filtered = getFiltered();
-  document.getElementById('count-num').textContent = filtered.length;
-  filtered.forEach(store => {
-    const color = getCategoryColor(store.category);
-    const marker = new google.maps.Marker({
-      position:{lat:store.lat,lng:store.lng}, map, title:store.name,
+  const filtered=getFiltered();
+  document.getElementById('count-num').textContent=filtered.length;
+  filtered.forEach(store=>{
+    const color=getCategoryColor(store.category);
+    const marker=new google.maps.Marker({
+      position:{lat:store.lat,lng:store.lng},map,title:store.name,
       icon:{
         path:'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-        fillColor:color, fillOpacity:1, strokeColor:'white', strokeWeight:1.5,
-        scale:1.9, anchor:new google.maps.Point(12,22),
+        fillColor:color,fillOpacity:1,strokeColor:'white',strokeWeight:1.5,
+        scale:1.9,anchor:new google.maps.Point(12,22),
       },
       animation:google.maps.Animation.DROP,
     });
@@ -746,48 +737,37 @@ function renderMarkers() {
     markers.push(marker);
   });
 }
-
 function getFiltered() {
   return STORES
-    .filter(s =>
-      (selectedPrefecture==='all' || s.prefecture===selectedPrefecture) &&
-      (selectedCategory==='すべて'  || s.category===selectedCategory)
-    )
+    .filter(s=>(selectedPrefecture==='all'||s.prefecture===selectedPrefecture)&&(selectedCategory==='すべて'||s.category===selectedCategory))
     .sort((a,b)=>b.score-a.score);
 }
 
 /* ====== RANKING ====== */
 function renderRanking() {
-  const container = document.getElementById('ranking-list');
-  container.innerHTML = '';
-  const catLabel = selectedCategory==='すべて' ? '全カテゴリ' : selectedCategory;
-
+  const container=document.getElementById('ranking-list'); container.innerHTML='';
+  const catLabel=selectedCategory==='すべて'?'全カテゴリ':selectedCategory;
   if (selectedPrefecture!=='all') {
-    const list = getFiltered();
-    document.getElementById('ranking-desc').textContent = `${selectedPrefecture} · ${catLabel} · ${list.length}件`;
-    if (!list.length) { container.innerHTML = emptyState(); return; }
+    const list=getFiltered();
+    document.getElementById('ranking-desc').textContent=`${selectedPrefecture} · ${catLabel} · ${list.length}件`;
+    if(!list.length){container.innerHTML=emptyState();return;}
     list.forEach((s,i)=>container.appendChild(makeStoreItem(s,i+1,false)));
     return;
   }
-
-  document.getElementById('ranking-desc').textContent = `全国 · ${catLabel} · 都道府県別`;
-  let total = 0;
-  PREF_ORDER.forEach(pref => {
-    const ps = STORES
-      .filter(s=>s.prefecture===pref && (selectedCategory==='すべて'||s.category===selectedCategory))
-      .sort((a,b)=>b.score-a.score);
-    if (!ps.length) return;
-    total += ps.length;
-    const h = document.createElement('div');
-    h.className='pref-section-header'; h.textContent=pref;
+  document.getElementById('ranking-desc').textContent=`全国 · ${catLabel} · 都道府県別`;
+  let total=0;
+  PREF_ORDER.forEach(pref=>{
+    const ps=STORES.filter(s=>s.prefecture===pref&&(selectedCategory==='すべて'||s.category===selectedCategory)).sort((a,b)=>b.score-a.score);
+    if(!ps.length) return;
+    total+=ps.length;
+    const h=document.createElement('div'); h.className='pref-section-header'; h.textContent=pref;
     container.appendChild(h);
     ps.forEach((s,i)=>container.appendChild(makeStoreItem(s,i+1,true)));
   });
-  if (!total) container.innerHTML=emptyState();
+  if(!total) container.innerHTML=emptyState();
 }
-
 function makeStoreItem(store,rank,inSection) {
-  const color=getCategoryColor(store.category), favd=isFav(store.id);
+  const color=getCategoryColor(store.category),favd=isFav(store.id);
   const item=document.createElement('div'); item.className='store-list-item';
   item.innerHTML=`
     <div class="rank-num ${rank===1?'top1':rank===2?'top2':rank===3?'top3':''}">${rank}</div>
@@ -801,22 +781,17 @@ function makeStoreItem(store,rank,inSection) {
       <div class="list-item-score-val">${store.score.toLocaleString()}</div>
       <div class="list-item-score-unit">pt</div>
     </div>
-    <button class="list-item-fav" data-id="${store.id}" onclick="toggleFavFromList(event,${store.id})">${favd?'❤️':'🤍'}</button>
-  `;
+    <button class="list-item-fav" data-id="${store.id}" onclick="toggleFavFromList(event,${store.id})">${favd?'❤️':'🤍'}</button>`;
   item.addEventListener('click',()=>openPanel(store));
   return item;
 }
-
-function emptyState() {
-  return `<div class="empty-state"><div class="emoji">🔍</div><p>該当するお店がありません</p><small>フィルターを変更してください</small></div>`;
-}
+function emptyState(){return`<div class="empty-state"><div class="emoji">🔍</div><p>該当するお店がありません</p><small>フィルターを変更してください</small></div>`;}
 
 /* ====== FAVORITES ====== */
 function renderFavorites() {
   const favStores=STORES.filter(s=>isFav(s.id)).sort((a,b)=>b.score-a.score);
-  const container=document.getElementById('favorites-list');
-  container.innerHTML='';
-  if (!favStores.length) {
+  const container=document.getElementById('favorites-list'); container.innerHTML='';
+  if(!favStores.length){
     container.innerHTML=`<div class="empty-state"><div class="emoji">🤍</div><p>お気に入りがまだありません</p><small>マップやランキングでハートを押してみよう</small></div>`;
     return;
   }
@@ -834,68 +809,57 @@ function renderFavorites() {
         <div class="list-item-score-val">${store.score.toLocaleString()}</div>
         <div class="list-item-score-unit">pt</div>
       </div>
-      <button class="list-item-fav" data-id="${store.id}" onclick="toggleFavFromList(event,${store.id})">❤️</button>
-    `;
+      <button class="list-item-fav" data-id="${store.id}" onclick="toggleFavFromList(event,${store.id})">❤️</button>`;
     item.addEventListener('click',()=>openPanel(store));
     container.appendChild(item);
   });
 }
-
-function updateFavTab() {
-  document.getElementById('tab-favorites').classList.toggle('has-fav', favorites.size>0);
-}
-function toggleFav(id) {
-  if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
-  saveFavorites(); updateFavTab();
-}
-function toggleFavFromList(e,id) {
+function updateFavTab(){ document.getElementById('tab-favorites').classList.toggle('has-fav',favorites.size>0); }
+function toggleFav(id){ if(favorites.has(id))favorites.delete(id);else favorites.add(id); saveFavorites();updateFavTab(); }
+function toggleFavFromList(e,id){
   e.stopPropagation(); toggleFav(id);
-  const btn=e.currentTarget;
-  btn.textContent=isFav(id)?'❤️':'🤍';
-  btn.classList.add('heart-pop');
-  btn.addEventListener('animationend',()=>btn.classList.remove('heart-pop'),{once:true});
-  if (currentPanelStore&&currentPanelStore.id===id) updatePanelFavBtn();
-  if (currentTab==='favorites') renderFavorites();
+  const btn=e.currentTarget; btn.textContent=isFav(id)?'❤️':'🤍';
+  btn.classList.add('heart-pop'); btn.addEventListener('animationend',()=>btn.classList.remove('heart-pop'),{once:true});
+  if(currentPanelStore&&currentPanelStore.id===id) updatePanelFavBtn();
+  if(currentTab==='favorites') renderFavorites();
 }
-function toggleFavFromPanel() {
-  if (!currentPanelStore) return;
+function toggleFavFromPanel(){
+  if(!currentPanelStore) return;
   toggleFav(currentPanelStore.id); updatePanelFavBtn();
-  document.querySelectorAll(`.list-item-fav[data-id="${currentPanelStore.id}"]`).forEach(btn=>{
-    btn.textContent=isFav(currentPanelStore.id)?'❤️':'🤍';
-  });
-  if (currentTab==='favorites') renderFavorites();
+  document.querySelectorAll(`.list-item-fav[data-id="${currentPanelStore.id}"]`).forEach(btn=>{ btn.textContent=isFav(currentPanelStore.id)?'❤️':'🤍'; });
+  if(currentTab==='favorites') renderFavorites();
 }
-function updatePanelFavBtn() {
-  if (!currentPanelStore) return;
+function updatePanelFavBtn(){
+  if(!currentPanelStore) return;
   const btn=document.getElementById('panel-fav-btn');
   btn.textContent=isFav(currentPanelStore.id)?'❤️':'🤍';
-  btn.classList.add('heart-pop');
-  btn.addEventListener('animationend',()=>btn.classList.remove('heart-pop'),{once:true});
+  btn.classList.add('heart-pop'); btn.addEventListener('animationend',()=>btn.classList.remove('heart-pop'),{once:true});
 }
 
 /* ══════════════════════════════
-   PHOTO CAROUSEL
+   CAROUSEL  ─  flex: 0 0 100% 方式
+   スライドはコンテナ幅100%を維持。
+   translateX は -index*100% で移動。
 ══════════════════════════════ */
 function buildCarousel(category) {
   carouselPhotos = CATEGORY_PHOTO_SETS[category] || DEFAULT_PHOTOS;
-  carouselIndex = 0;
+  carouselIndex  = 0;
 
-  // トラック構築
   const track = document.getElementById('photo-carousel-track');
   track.innerHTML = '';
+  // track の width は CSS で 100% のまま。flex で各スライドを並べる。
+  track.style.transform = 'translateX(0)';
+
   carouselPhotos.forEach((p, i) => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
     slide.innerHTML = `
       <img src="${p.url}" alt="${p.label}" loading="${i===0?'eager':'lazy'}">
-      <div class="photo-type-label">${p.label}</div>
-    `;
+      <div class="photo-type-label">${p.label}</div>`;
     track.appendChild(slide);
   });
-  track.style.width = (carouselPhotos.length * 100) + '%';
-  track.querySelectorAll('.carousel-slide').forEach(s => s.style.width = (100/carouselPhotos.length)+'%');
 
-  // ドット構築
+  // ドット
   const dots = document.getElementById('photo-dots');
   dots.innerHTML = '';
   carouselPhotos.forEach((_, i) => {
@@ -905,51 +869,38 @@ function buildCarousel(category) {
     dots.appendChild(dot);
   });
 
-  // 矢印表示制御
   updateArrows();
 
-  // タッチイベント
+  // タッチスワイプ
   const wrap = document.getElementById('photo-carousel-wrap');
-  wrap.ontouchstart = e => { touchStartX = e.touches[0].clientX; touchDragging=true; };
-  wrap.ontouchmove  = e => {
-    if (!touchDragging) return;
-    const dx = e.touches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 5) e.preventDefault();
-  };
+  wrap.ontouchstart = e => { touchStartX = e.touches[0].clientX; };
+  wrap.ontouchmove  = e => { if(Math.abs(e.touches[0].clientX - touchStartX) > 8) e.preventDefault(); };
   wrap.ontouchend   = e => {
-    if (!touchDragging) return;
-    touchDragging = false;
     const dx = touchStartX - e.changedTouches[0].clientX;
-    if (dx > 40)       carouselNext();
-    else if (dx < -40) carouselPrev();
+    if (dx >  40) carouselNext();
+    if (dx < -40) carouselPrev();
   };
 }
 
 function goToSlide(idx) {
-  carouselIndex = Math.max(0, Math.min(idx, carouselPhotos.length-1));
-  const track = document.getElementById('photo-carousel-track');
-  track.style.transform = `translateX(-${carouselIndex * (100/carouselPhotos.length)}%)`;
-  document.querySelectorAll('.photo-dot').forEach((d,i)=>d.classList.toggle('active',i===carouselIndex));
+  carouselIndex = Math.max(0, Math.min(idx, carouselPhotos.length - 1));
+  // 各スライドが 100% 幅なので index*100% だけ左にずらす
+  document.getElementById('photo-carousel-track').style.transform = `translateX(-${carouselIndex * 100}%)`;
+  document.querySelectorAll('.photo-dot').forEach((d,i) => d.classList.toggle('active', i===carouselIndex));
   updateArrows();
 }
-
-function carouselPrev() { goToSlide(carouselIndex-1); }
-function carouselNext() { goToSlide(carouselIndex+1); }
-
+function carouselPrev() { goToSlide(carouselIndex - 1); }
+function carouselNext() { goToSlide(carouselIndex + 1); }
 function updateArrows() {
-  document.getElementById('arrow-prev').style.opacity = carouselIndex===0 ? '0.3':'1';
-  document.getElementById('arrow-next').style.opacity = carouselIndex===carouselPhotos.length-1 ? '0.3':'1';
+  document.getElementById('arrow-prev').style.opacity = carouselIndex === 0 ? '0.3' : '1';
+  document.getElementById('arrow-next').style.opacity = carouselIndex === carouselPhotos.length-1 ? '0.3' : '1';
 }
 
 /* ====== PANEL ====== */
 function openPanel(store) {
   currentPanelStore = store;
   const color = getCategoryColor(store.category);
-
-  // カルーセル構築
   buildCarousel(store.category);
-
-  // テキスト情報
   document.getElementById('panel-category-badge').textContent      = store.category;
   document.getElementById('panel-category-badge').style.background = color;
   document.getElementById('panel-name').textContent                = store.name;
@@ -958,11 +909,9 @@ function openPanel(store) {
   document.getElementById('panel-instagram').textContent           = formatNum(store.instagram)+'件';
   document.getElementById('panel-tiktok').textContent              = formatNum(store.tiktok)+'回';
   document.getElementById('panel-fav-btn').textContent             = isFav(store.id)?'❤️':'🤍';
-
   document.getElementById('store-panel').classList.add('open');
-  if (currentTab==='map') map.panTo({lat:store.lat,lng:store.lng});
+  if(currentTab==='map') map.panTo({lat:store.lat,lng:store.lng});
 }
-
 function closePanel() {
   document.getElementById('store-panel').classList.remove('open');
   currentPanelStore = null;
@@ -970,21 +919,13 @@ function closePanel() {
 
 /* ====== CURRENT LOCATION ====== */
 function goToCurrentLocation() {
-  if (!navigator.geolocation) { alert('このブラウザでは現在地取得ができません'); return; }
-  if (currentTab!=='map') switchTab('map');
+  if(!navigator.geolocation){alert('このブラウザでは現在地取得ができません');return;}
+  if(currentTab!=='map') switchTab('map');
   navigator.geolocation.getCurrentPosition(
-    pos => {
-      const loc = {lat:pos.coords.latitude, lng:pos.coords.longitude};
-      map.setCenter(loc); map.setZoom(13);
-      new google.maps.Marker({
-        position:loc, map,
-        icon:{
-          path:google.maps.SymbolPath.CIRCLE,
-          scale:10, fillColor:'#4285F4', fillOpacity:1,
-          strokeColor:'white', strokeWeight:2.5,
-        },
-        title:'現在地', zIndex:999,
-      });
+    pos=>{
+      const loc={lat:pos.coords.latitude,lng:pos.coords.longitude};
+      map.setCenter(loc);map.setZoom(13);
+      new google.maps.Marker({position:loc,map,icon:{path:google.maps.SymbolPath.CIRCLE,scale:10,fillColor:'#4285F4',fillOpacity:1,strokeColor:'white',strokeWeight:2.5},title:'現在地',zIndex:999});
     },
     ()=>alert('現在地の取得に失敗しました。ブラウザの位置情報を許可してください。')
   );
